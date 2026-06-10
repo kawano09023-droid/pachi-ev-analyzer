@@ -5,7 +5,6 @@ import {
   AlertTriangle,
   BarChart3,
   Calculator,
-  ChevronDown,
   Download,
   GitFork,
   HelpCircle,
@@ -43,6 +42,7 @@ type RecordType = "玉" | "枚";
 type Tone = "neutral" | "good" | "bad";
 type Theme = "light" | "dark";
 type EvRank = "S" | "A" | "B" | "C" | "D";
+type ActiveTab = "home" | "record" | "analytics" | "rankings" | "settings";
 
 type RankingItem = {
   name: string;
@@ -495,9 +495,9 @@ export default function Home() {
   const [settings, setSettings] = useState<BankrollSettings>(initialSettings);
   const [ev, setEv] = useState<EvInput>(initialEv);
   const [ready, setReady] = useState(false);
-  const [isRecordFormOpen, setIsRecordFormOpen] = useState(false);
   const [isAboutOpen, setIsAboutOpen] = useState(false);
   const [theme, setTheme] = useState<Theme>("light");
+  const [activeTab, setActiveTab] = useState<ActiveTab>("home");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -753,7 +753,6 @@ export default function Home() {
       memo: String(formData.get("memo") || ""),
     };
     setRecords((current) => [record, ...current]);
-    setIsRecordFormOpen(false);
   }
 
   function exportJson() {
@@ -828,412 +827,463 @@ export default function Home() {
   const palette = chartPalette(theme);
 
   return (
-    <main className="mx-auto grid w-full max-w-6xl gap-5 overflow-x-hidden px-3 py-4 pb-12 sm:gap-6 sm:px-6 lg:px-8">
+    <main className="mx-auto grid w-full max-w-6xl gap-5 overflow-x-hidden px-3 py-4 pb-24 sm:gap-6 sm:px-6 lg:px-8">
       <header className="grid gap-3 border-b border-[var(--line)] pb-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center justify-between gap-3">
           <div className="min-w-0">
             <p className="text-sm font-black text-[var(--teal-dark)]">学習・分析・リスク管理</p>
             <h1 className="text-2xl font-black tracking-normal sm:text-4xl">Pachi EV Analyzer</h1>
           </div>
-          <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              onClick={() => setTheme((current) => (current === "dark" ? "light" : "dark"))}
-              className="inline-flex min-h-12 items-center gap-2 rounded-md border border-[var(--line)] bg-[var(--panel)] px-4 text-sm font-black shadow-sm"
-              aria-label={theme === "dark" ? "ライトモードに切り替え" : "ダークモードに切り替え"}
-              aria-pressed={theme === "dark"}
-            >
-              {theme === "dark" ? <Sun size={18} aria-hidden /> : <Moon size={18} aria-hidden />}
-              {theme === "dark" ? "Light" : "Dark"}
-            </button>
-            <button
-              type="button"
-              onClick={loadDemoRecords}
-              className="inline-flex min-h-12 items-center gap-2 rounded-md border border-[var(--line)] bg-[var(--panel)] px-4 text-sm font-black shadow-sm"
-            >
-              <BarChart3 size={18} aria-hidden />
-              サンプルデータ読み込み
-            </button>
-            <button
-              type="button"
-              onClick={exportJson}
-              className="inline-flex min-h-12 items-center gap-2 rounded-md border border-[var(--line)] bg-[var(--panel)] px-4 text-sm font-black shadow-sm"
-            >
-              <Download size={18} aria-hidden />
-              JSON
-            </button>
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="inline-flex min-h-12 items-center gap-2 rounded-md border border-[var(--line)] bg-[var(--panel)] px-4 text-sm font-black shadow-sm"
-            >
-              <Upload size={18} aria-hidden />
-              Import
-            </button>
-            <input
-              ref={fileInputRef}
-              className="hidden"
-              type="file"
-              accept="application/json,.json"
-              onChange={(event) => {
-                const file = event.target.files?.[0];
-                if (file) void importJsonFile(file);
-              }}
-            />
-            <button
-              type="button"
-              onClick={exportCsv}
-              className="inline-flex min-h-12 items-center gap-2 rounded-md border border-[var(--line)] bg-[var(--panel)] px-4 text-sm font-black shadow-sm"
-            >
-              <Download size={18} aria-hidden />
-              CSV
-            </button>
-          </div>
-        </div>
-
-        <section className="rounded-md border border-[var(--line)] bg-[var(--panel)] shadow-sm">
           <button
             type="button"
-            onClick={() => setIsAboutOpen((current) => !current)}
-            className="flex min-h-12 w-full items-center justify-between gap-3 px-4 text-left font-black"
-            aria-expanded={isAboutOpen}
+            onClick={() => setTheme((current) => (current === "dark" ? "light" : "dark"))}
+            className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-md border border-[var(--line)] bg-[var(--panel)] px-3 text-sm font-black shadow-sm"
+            aria-label={theme === "dark" ? "ライトモードに切り替え" : "ダークモードに切り替え"}
+            aria-pressed={theme === "dark"}
           >
-            <span className="inline-flex items-center gap-2">
-              <HelpCircle size={18} aria-hidden />
-              このアプリについて
-            </span>
-            <ChevronDown size={18} aria-hidden className={`transition ${isAboutOpen ? "rotate-180" : ""}`} />
+            {theme === "dark" ? <Sun size={18} aria-hidden /> : <Moon size={18} aria-hidden />}
+            <span className="hidden sm:inline">{theme === "dark" ? "Light" : "Dark"}</span>
           </button>
-          {isAboutOpen && (
-            <div className="grid gap-2 border-t border-[var(--line)] px-4 py-3 text-sm font-bold leading-6 text-[var(--muted)]">
-              <p>Pachi EV Analyzer は、期待値計算、収支分析、資金管理を行うためのツールです。</p>
-              <p>ギャンブルを推奨するものではありません。確率・統計・資金管理の学習を目的とします。</p>
-            </div>
-          )}
-        </section>
+        </div>
       </header>
 
-      <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <DashboardCard icon={PiggyBank} label="総収支" value={formatSignedYen(totals.profit)} tone={valueTone(totals.profit)} />
-        <DashboardCard icon={TrendingUp} label="今月収支" value={formatSignedYen(totals.monthlyProfit)} tone={valueTone(totals.monthlyProfit)} />
-        <DashboardCard icon={Trophy} label="勝率" value={`${totals.winRate.toFixed(1)}%`} />
-        <DashboardCard icon={ShieldAlert} label="最大連敗" value={`${totals.maxLosingStreak}連敗`} tone={totals.maxLosingStreak >= 3 ? "bad" : "neutral"} />
-      </section>
+      <input
+        ref={fileInputRef}
+        className="hidden"
+        type="file"
+        accept="application/json,.json"
+        onChange={(event) => {
+          const file = event.target.files?.[0];
+          if (file) void importJsonFile(file);
+        }}
+      />
 
-      {warnings.length > 0 && (
-        <section className="grid gap-2 rounded-md border border-[var(--bad-line)] bg-[var(--bad-bg)] p-4 text-sm font-bold text-[var(--rose)]">
-          {warnings.map((warning) => (
-            <p key={warning} className="flex items-start gap-2">
-              <AlertTriangle size={18} aria-hidden />
-              {warning}
-            </p>
-          ))}
+      {activeTab === "home" && (
+        <>
+          <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+            <DashboardCard icon={PiggyBank} label="総収支" value={formatSignedYen(totals.profit)} tone={valueTone(totals.profit)} />
+            <DashboardCard icon={TrendingUp} label="今月収支" value={formatSignedYen(totals.monthlyProfit)} tone={valueTone(totals.monthlyProfit)} />
+            <DashboardCard icon={Trophy} label="勝率" value={`${totals.winRate.toFixed(1)}%`} />
+            <DashboardCard icon={ShieldAlert} label="最大連敗" value={`${totals.maxLosingStreak}連敗`} tone={totals.maxLosingStreak >= 3 ? "bad" : "neutral"} />
+          </section>
+
+          {warnings.length > 0 && (
+            <section className="grid gap-2 rounded-md border border-[var(--bad-line)] bg-[var(--bad-bg)] p-4 text-sm font-bold text-[var(--rose)]">
+              {warnings.map((warning) => (
+                <p key={warning} className="flex items-start gap-2">
+                  <AlertTriangle size={18} aria-hidden />
+                  {warning}
+                </p>
+              ))}
+            </section>
+          )}
+
+          <section className="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => setActiveTab("record")}
+              className="inline-flex min-h-14 items-center justify-center gap-2 rounded-md bg-[var(--teal)] px-4 font-black text-white shadow-sm"
+            >
+              <Plus size={20} aria-hidden />
+              Add Record
+            </button>
+            <a
+              href="#ev-calculator"
+              className="inline-flex min-h-14 items-center justify-center gap-2 rounded-md border border-[var(--line)] bg-[var(--panel)] px-4 font-black shadow-sm"
+            >
+              <Calculator size={20} aria-hidden />
+              EV Calculator
+            </a>
+          </section>
+        </>
+      )}
+
+      {activeTab === "home" && (
+        <section id="ev-calculator" className="rounded-md border border-[var(--line)] bg-[var(--panel)] p-4 shadow-sm">
+          <div className="mb-4 flex items-center gap-2">
+            <Calculator size={20} aria-hidden />
+            <h2 className="text-lg font-black">期待値計算</h2>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <Field label="機種名">
+              <input className={inputClass()} value={ev.machineName} onChange={(e) => setEv({ ...ev, machineName: e.target.value })} />
+            </Field>
+            <Field label="大当たり確率（1/〇〇）" help="例: 399 → 1/399">
+              <input className={inputClass()} type="number" min="1" placeholder="例: 399" value={ev.jackpotDenominator} onChange={(e) => updateEvNumber("jackpotDenominator", e.target.value)} />
+            </Field>
+            <Field label="1k回転率" help="1,000円あたり何回転するか">
+              <input className={inputClass()} type="number" value={ev.spinsPerK} onChange={(e) => updateEvNumber("spinsPerK", e.target.value)} />
+            </Field>
+            <Field label="ボーダー回転率" help="損益分岐の目安になる回転率">
+              <input className={inputClass()} type="number" value={ev.borderSpins} onChange={(e) => updateEvNumber("borderSpins", e.target.value)} />
+            </Field>
+            <Field label="大当たり1回あたりの平均出玉" help="ラッシュ込みで平均何玉獲得できるか">
+              <input className={inputClass()} type="number" value={ev.averagePayout} onChange={(e) => updateEvNumber("averagePayout", e.target.value)} />
+            </Field>
+            <Field
+              label="交換率（1玉あたりの円）"
+              help={
+                <>
+                  例: 28玉交換 = 3.57
+                  <br />
+                  30玉交換 = 3.33
+                </>
+              }
+            >
+              <input className={inputClass()} type="number" step="0.01" value={ev.exchangeRate} onChange={(e) => updateEvNumber("exchangeRate", e.target.value)} />
+            </Field>
+          </div>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+            <StatCard label="ボーダー差" value={`${evResult.rotationDiff.toFixed(1)}回`} tone={valueTone(evResult.rotationDiff)} />
+            <StatCard label="回転率差" value={`${evResult.rotationDiffRate.toFixed(1)}%`} tone={valueTone(evResult.rotationDiff)} />
+            <StatCard label="1k期待値" value={formatSignedYen(evResult.evPer1k)} tone={valueTone(evResult.evPer1k)} />
+            <StatCard label="1000回転期待値" value={formatSignedYen(evResult.evPer1000)} tone={valueTone(evResult.evPer1000)} />
+            <StatCard label="期待値ランク" value={`ランク ${evResult.rank}`} tone={evResult.rank === "D" ? "bad" : evResult.rank === "C" ? "neutral" : "good"} />
+          </div>
+          <div
+            className={`mt-3 rounded-md border p-4 text-sm font-black leading-6 ${
+              evResult.rotationDiff >= 0
+                ? "border-[var(--good-line)] bg-[var(--good-bg)] text-[var(--teal-dark)]"
+                : "border-[var(--bad-line)] bg-[var(--bad-bg)] text-[var(--rose)]"
+            }`}
+          >
+            {evResult.comment}
+          </div>
         </section>
       )}
 
-      <section className="rounded-md border border-[var(--line)] bg-[var(--panel)] p-4 shadow-sm">
-        <div className="mb-4 flex items-center gap-2">
-          <Calculator size={20} aria-hidden />
-          <h2 className="text-lg font-black">期待値計算</h2>
-        </div>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          <Field label="機種名">
-            <input className={inputClass()} value={ev.machineName} onChange={(e) => setEv({ ...ev, machineName: e.target.value })} />
-          </Field>
-          <Field label="大当たり確率（1/〇〇）" help="例: 399 → 1/399">
-            <input className={inputClass()} type="number" min="1" placeholder="例: 399" value={ev.jackpotDenominator} onChange={(e) => updateEvNumber("jackpotDenominator", e.target.value)} />
-          </Field>
-          <Field label="1k回転率" help="1,000円あたり何回転するか">
-            <input className={inputClass()} type="number" value={ev.spinsPerK} onChange={(e) => updateEvNumber("spinsPerK", e.target.value)} />
-          </Field>
-          <Field label="ボーダー回転率" help="損益分岐の目安になる回転率">
-            <input className={inputClass()} type="number" value={ev.borderSpins} onChange={(e) => updateEvNumber("borderSpins", e.target.value)} />
-          </Field>
-          <Field label="大当たり1回あたりの平均出玉" help="ラッシュ込みで平均何玉獲得できるか">
-            <input className={inputClass()} type="number" value={ev.averagePayout} onChange={(e) => updateEvNumber("averagePayout", e.target.value)} />
-          </Field>
-          <Field
-            label="交換率（1玉あたりの円）"
-            help={
-              <>
-                例: 28玉交換 = 3.57
-                <br />
-                30玉交換 = 3.33
-              </>
-            }
-          >
-            <input className={inputClass()} type="number" step="0.01" value={ev.exchangeRate} onChange={(e) => updateEvNumber("exchangeRate", e.target.value)} />
-          </Field>
-        </div>
-        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-          <StatCard label="ボーダー差" value={`${evResult.rotationDiff.toFixed(1)}回`} tone={valueTone(evResult.rotationDiff)} />
-          <StatCard label="回転率差" value={`${evResult.rotationDiffRate.toFixed(1)}%`} tone={valueTone(evResult.rotationDiff)} />
-          <StatCard label="1k期待値" value={formatSignedYen(evResult.evPer1k)} tone={valueTone(evResult.evPer1k)} />
-          <StatCard label="1000回転期待値" value={formatSignedYen(evResult.evPer1000)} tone={valueTone(evResult.evPer1000)} />
-          <StatCard label="期待値ランク" value={`ランク ${evResult.rank}`} tone={evResult.rank === "D" ? "bad" : evResult.rank === "C" ? "neutral" : "good"} />
-        </div>
-        <div
-          className={`mt-3 rounded-md border p-4 text-sm font-black leading-6 ${
-            evResult.rotationDiff >= 0
-              ? "border-[var(--good-line)] bg-[var(--good-bg)] text-[var(--teal-dark)]"
-              : "border-[var(--bad-line)] bg-[var(--bad-bg)] text-[var(--rose)]"
-          }`}
-        >
-          {evResult.comment}
-        </div>
-      </section>
-
-      <section className="rounded-md border border-[var(--line)] bg-[var(--panel)] shadow-sm">
-        <button
-          type="button"
-          onClick={() => setIsRecordFormOpen((current) => !current)}
-          className="flex min-h-14 w-full items-center justify-between gap-3 px-4 text-left font-black"
-          aria-expanded={isRecordFormOpen}
-        >
-          <span className="inline-flex items-center gap-2">
-            <Plus size={20} aria-hidden />
-            収支を登録
-          </span>
-          <ChevronDown size={20} aria-hidden className={`transition ${isRecordFormOpen ? "rotate-180" : ""}`} />
-        </button>
-        {isRecordFormOpen && (
-          <form
-            action={addRecord}
-            className="grid gap-3 border-t border-[var(--line)] p-4 sm:grid-cols-2"
-            onSubmit={(event) => {
-              const form = event.currentTarget;
-              setTimeout(() => form.reset(), 0);
-            }}
-          >
-            <Field label="日付">
-              <input className={inputClass()} name="date" type="date" defaultValue={new Date().toISOString().slice(0, 10)} required />
-            </Field>
-            <Field label="種別">
-              <select className={inputClass()} name="type" defaultValue="玉">
-                <option>玉</option>
-                <option>枚</option>
-              </select>
-            </Field>
-            <Field label="機種名">
-              <input className={inputClass()} name="machine" required />
-            </Field>
-            <Field label="店舗名">
-              <input className={inputClass()} name="hall" required />
-            </Field>
-            <Field label="投資金額">
-              <input className={inputClass()} name="investment" type="number" min="0" required />
-            </Field>
-            <Field label="回収金額">
-              <input className={inputClass()} name="recovery" type="number" min="0" required />
-            </Field>
-            <Field label="差玉・差枚">
-              <input className={inputClass()} name="unitDiff" type="number" />
-            </Field>
-            <Field label="メモ">
-              <input className={inputClass()} name="memo" />
-            </Field>
-            <button className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md bg-[var(--teal)] px-4 font-black text-white sm:col-span-2" type="submit">
-              <Plus size={18} aria-hidden />
-              登録
-            </button>
-          </form>
-        )}
-      </section>
-
-      <section className="grid gap-4">
-        <div className="flex items-center gap-2">
-          <LineChart size={20} aria-hidden />
-          <h2 className="text-lg font-black">分析ダッシュボード</h2>
-        </div>
-        <div className="grid min-w-0 gap-4 lg:grid-cols-2">
-          <ChartPanel title="月別収支" summary={chartSummary}>
-            {ready ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={monthlyData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke={palette.grid} />
-                  <XAxis dataKey="month" tick={{ fontSize: 12, fill: palette.text }} axisLine={{ stroke: palette.grid }} tickLine={{ stroke: palette.grid }} />
-                  <YAxis tickFormatter={(value) => formatAxisYen(Number(value))} width={54} tick={{ fontSize: 12, fill: palette.text }} axisLine={{ stroke: palette.grid }} tickLine={{ stroke: palette.grid }} />
-                  <Tooltip formatter={chartTooltipFormatter} contentStyle={tooltipStyle(theme)} labelStyle={{ color: palette.tooltipText, fontWeight: 800 }} />
-                  <Bar dataKey="net" name="収支" radius={[4, 4, 0, 0]}>
-                    {monthlyData.map((entry) => (
-                      <Cell key={entry.month} fill={entry.net >= 0 ? palette.good : palette.bad} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            ) : (
-              <ChartFallback />
-            )}
-          </ChartPanel>
-
-          <ChartPanel title="資金推移" summary={balanceSummary}>
-            {ready ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <ReLineChart data={balanceData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke={palette.grid} />
-                  <XAxis dataKey="date" tick={{ fontSize: 12, fill: palette.text }} axisLine={{ stroke: palette.grid }} tickLine={{ stroke: palette.grid }} />
-                  <YAxis tickFormatter={(value) => formatAxisYen(Number(value))} width={54} tick={{ fontSize: 12, fill: palette.text }} axisLine={{ stroke: palette.grid }} tickLine={{ stroke: palette.grid }} />
-                  <Tooltip formatter={balanceTooltipFormatter} contentStyle={tooltipStyle(theme)} labelStyle={{ color: palette.tooltipText, fontWeight: 800 }} />
-                  <Line dataKey="balance" name="残高" stroke={palette.good} strokeWidth={3} dot={{ r: 3, fill: palette.good }} />
-                </ReLineChart>
-              </ResponsiveContainer>
-            ) : (
-              <ChartFallback />
-            )}
-          </ChartPanel>
-
-          <ChartPanel title="機種別収支" summary={machineSummary}>
-            {ready ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={machineData} layout="vertical" margin={{ left: 8, right: 14 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke={palette.grid} />
-                  <XAxis type="number" tickFormatter={(value) => formatAxisYen(Number(value))} tick={{ fontSize: 12, fill: palette.text }} axisLine={{ stroke: palette.grid }} tickLine={{ stroke: palette.grid }} />
-                  <YAxis dataKey="name" type="category" width={86} tick={{ fontSize: 11, fill: palette.text }} axisLine={{ stroke: palette.grid }} tickLine={{ stroke: palette.grid }} />
-                  <Tooltip formatter={chartTooltipFormatter} contentStyle={tooltipStyle(theme)} labelStyle={{ color: palette.tooltipText, fontWeight: 800 }} />
-                  <Bar dataKey="total" name="収支" radius={[0, 4, 4, 0]}>
-                    {machineData.map((entry) => (
-                      <Cell key={entry.name} fill={entry.total >= 0 ? palette.good : palette.bad} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            ) : (
-              <ChartFallback />
-            )}
-          </ChartPanel>
-
-          <ChartPanel title="店舗別収支" summary={hallSummary}>
-            {ready ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={hallData} layout="vertical" margin={{ left: 8, right: 14 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke={palette.grid} />
-                  <XAxis type="number" tickFormatter={(value) => formatAxisYen(Number(value))} tick={{ fontSize: 12, fill: palette.text }} axisLine={{ stroke: palette.grid }} tickLine={{ stroke: palette.grid }} />
-                  <YAxis dataKey="name" type="category" width={86} tick={{ fontSize: 11, fill: palette.text }} axisLine={{ stroke: palette.grid }} tickLine={{ stroke: palette.grid }} />
-                  <Tooltip formatter={chartTooltipFormatter} contentStyle={tooltipStyle(theme)} labelStyle={{ color: palette.tooltipText, fontWeight: 800 }} />
-                  <Bar dataKey="total" name="収支" radius={[0, 4, 4, 0]}>
-                    {hallData.map((entry) => (
-                      <Cell key={entry.name} fill={entry.total >= 0 ? palette.good : palette.bad} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            ) : (
-              <ChartFallback />
-            )}
-          </ChartPanel>
-
-          <RankingSection title="機種ランキング" top={machineRankings.top} bottom={machineRankings.bottom} />
-
-          <RankingSection title="店舗ランキング" top={hallRankings.top} bottom={hallRankings.bottom} />
-
-          <ChartPanel title="曜日別収支" summary={weekdaySummary}>
-            {ready ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={weekdayData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke={palette.grid} />
-                  <XAxis dataKey="day" tick={{ fontSize: 12, fill: palette.text }} axisLine={{ stroke: palette.grid }} tickLine={{ stroke: palette.grid }} />
-                  <YAxis tickFormatter={(value) => formatAxisYen(Number(value))} width={54} tick={{ fontSize: 12, fill: palette.text }} axisLine={{ stroke: palette.grid }} tickLine={{ stroke: palette.grid }} />
-                  <Tooltip formatter={chartTooltipFormatter} contentStyle={tooltipStyle(theme)} labelStyle={{ color: palette.tooltipText, fontWeight: 800 }} />
-                  <Bar dataKey="total" name="収支" fill={palette.amber} radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            ) : (
-              <ChartFallback />
-            )}
-          </ChartPanel>
-
-          <section className="grid content-start gap-3 rounded-md border border-[var(--line)] bg-[var(--panel)] p-4 shadow-sm">
-            <div className="flex items-center gap-2">
-              <BarChart3 size={20} aria-hidden />
-              <h3 className="text-base font-black">投資分析</h3>
+      {activeTab === "record" && (
+        <>
+          <section className="rounded-md border border-[var(--line)] bg-[var(--panel)] p-4 shadow-sm">
+            <div className="mb-4 flex items-center gap-2">
+              <Plus size={20} aria-hidden />
+              <h2 className="text-lg font-black">収支を登録</h2>
             </div>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3">
-              <StatCard label="平均投資" value={formatYen(totals.averageInvestment)} />
-              <StatCard label="平均回収" value={formatYen(totals.averageRecovery)} />
-              <StatCard label="最大投資" value={formatYen(totals.maxInvestment)} />
-              <StatCard label="最大回収" value={formatYen(totals.maxRecovery)} />
-              <StatCard label="総投資" value={formatYen(totals.investment)} />
-              <StatCard label="総回収" value={formatYen(totals.recovery)} />
+            <form
+              action={addRecord}
+              className="grid gap-3 sm:grid-cols-2"
+              onSubmit={(event) => {
+                const form = event.currentTarget;
+                setTimeout(() => form.reset(), 0);
+              }}
+            >
+              <Field label="日付">
+                <input className={inputClass()} name="date" type="date" defaultValue={new Date().toISOString().slice(0, 10)} required />
+              </Field>
+              <Field label="機種名">
+                <input className={inputClass()} name="machine" required />
+              </Field>
+              <Field label="店舗名">
+                <input className={inputClass()} name="hall" required />
+              </Field>
+              <Field label="投資金額">
+                <input className={inputClass()} name="investment" type="number" min="0" required />
+              </Field>
+              <Field label="回収金額">
+                <input className={inputClass()} name="recovery" type="number" min="0" required />
+              </Field>
+              <Field label="メモ">
+                <input className={inputClass()} name="memo" />
+              </Field>
+              <input type="hidden" name="type" value="玉" />
+              <input type="hidden" name="unitDiff" value="0" />
+              <button className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md bg-[var(--teal)] px-4 font-black text-white sm:col-span-2" type="submit">
+                <Plus size={18} aria-hidden />
+                登録
+              </button>
+            </form>
+          </section>
+
+          <section className="grid gap-3 rounded-md border border-[var(--line)] bg-[var(--panel)] p-4 shadow-sm">
+            <h2 className="text-lg font-black">収支一覧</h2>
+            {sortedRecords.length === 0 ? (
+              <p className="rounded-md bg-[var(--panel-muted)] px-3 py-8 text-center text-sm font-bold text-[var(--muted)]">
+                まだ収支レコードがありません
+              </p>
+            ) : (
+              <div className="grid gap-3">
+                {sortedRecords.map((record) => {
+                  const profit = profitOf(record);
+                  return (
+                    <article key={record.id} className="grid min-w-0 gap-3 rounded-md border border-[var(--line)] bg-[var(--panel)] p-3">
+                      <div className="flex min-w-0 items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="text-xs font-bold text-[var(--muted)]">{record.date}</p>
+                          <h3 className="truncate text-base font-black">{record.machine}</h3>
+                          <p className="truncate text-sm font-bold text-[var(--muted)]">{record.hall}</p>
+                        </div>
+                        <button
+                          type="button"
+                          aria-label="削除"
+                          title="削除"
+                          onClick={() => setRecords((current) => current.filter((row) => row.id !== record.id))}
+                          className="inline-flex size-11 shrink-0 items-center justify-center rounded-md border border-[var(--line)] bg-[var(--panel)]"
+                        >
+                          <Trash2 size={17} aria-hidden />
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 text-sm sm:grid-cols-4">
+                        <RecordMetric label="投資" value={formatYen(record.investment)} />
+                        <RecordMetric label="回収" value={formatYen(record.recovery)} />
+                        <RecordMetric label="差玉・差枚" value={`${number.format(record.unitDiff)} ${record.type}`} />
+                        <RecordMetric label="収支" value={formatSignedYen(profit)} tone={valueTone(profit)} />
+                      </div>
+                      {record.memo && <p className="text-sm font-bold text-[var(--muted)]">{record.memo}</p>}
+                    </article>
+                  );
+                })}
+              </div>
+            )}
+          </section>
+        </>
+      )}
+
+      {activeTab === "analytics" && (
+        <section className="grid gap-4">
+          <div className="flex items-center gap-2">
+            <LineChart size={20} aria-hidden />
+            <h2 className="text-lg font-black">分析</h2>
+          </div>
+          <div className="grid min-w-0 gap-4 lg:grid-cols-2">
+            <ChartPanel title="月別収支" summary={chartSummary}>
+              {ready ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={monthlyData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke={palette.grid} />
+                    <XAxis dataKey="month" tick={{ fontSize: 12, fill: palette.text }} axisLine={{ stroke: palette.grid }} tickLine={{ stroke: palette.grid }} />
+                    <YAxis tickFormatter={(value) => formatAxisYen(Number(value))} width={54} tick={{ fontSize: 12, fill: palette.text }} axisLine={{ stroke: palette.grid }} tickLine={{ stroke: palette.grid }} />
+                    <Tooltip formatter={chartTooltipFormatter} contentStyle={tooltipStyle(theme)} labelStyle={{ color: palette.tooltipText, fontWeight: 800 }} />
+                    <Bar dataKey="net" name="収支" radius={[4, 4, 0, 0]}>
+                      {monthlyData.map((entry) => (
+                        <Cell key={entry.month} fill={entry.net >= 0 ? palette.good : palette.bad} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <ChartFallback />
+              )}
+            </ChartPanel>
+
+            <ChartPanel title="資金推移" summary={balanceSummary}>
+              {ready ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <ReLineChart data={balanceData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke={palette.grid} />
+                    <XAxis dataKey="date" tick={{ fontSize: 12, fill: palette.text }} axisLine={{ stroke: palette.grid }} tickLine={{ stroke: palette.grid }} />
+                    <YAxis tickFormatter={(value) => formatAxisYen(Number(value))} width={54} tick={{ fontSize: 12, fill: palette.text }} axisLine={{ stroke: palette.grid }} tickLine={{ stroke: palette.grid }} />
+                    <Tooltip formatter={balanceTooltipFormatter} contentStyle={tooltipStyle(theme)} labelStyle={{ color: palette.tooltipText, fontWeight: 800 }} />
+                    <Line dataKey="balance" name="残高" stroke={palette.good} strokeWidth={3} dot={{ r: 3, fill: palette.good }} />
+                  </ReLineChart>
+                </ResponsiveContainer>
+              ) : (
+                <ChartFallback />
+              )}
+            </ChartPanel>
+
+            <ChartPanel title="曜日別収支" summary={weekdaySummary}>
+              {ready ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={weekdayData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke={palette.grid} />
+                    <XAxis dataKey="day" tick={{ fontSize: 12, fill: palette.text }} axisLine={{ stroke: palette.grid }} tickLine={{ stroke: palette.grid }} />
+                    <YAxis tickFormatter={(value) => formatAxisYen(Number(value))} width={54} tick={{ fontSize: 12, fill: palette.text }} axisLine={{ stroke: palette.grid }} tickLine={{ stroke: palette.grid }} />
+                    <Tooltip formatter={chartTooltipFormatter} contentStyle={tooltipStyle(theme)} labelStyle={{ color: palette.tooltipText, fontWeight: 800 }} />
+                    <Bar dataKey="total" name="収支" fill={palette.amber} radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <ChartFallback />
+              )}
+            </ChartPanel>
+
+            <ChartPanel title="機種別収支" summary={machineSummary}>
+              {ready ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={machineData} layout="vertical" margin={{ left: 8, right: 14 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke={palette.grid} />
+                    <XAxis type="number" tickFormatter={(value) => formatAxisYen(Number(value))} tick={{ fontSize: 12, fill: palette.text }} axisLine={{ stroke: palette.grid }} tickLine={{ stroke: palette.grid }} />
+                    <YAxis dataKey="name" type="category" width={86} tick={{ fontSize: 11, fill: palette.text }} axisLine={{ stroke: palette.grid }} tickLine={{ stroke: palette.grid }} />
+                    <Tooltip formatter={chartTooltipFormatter} contentStyle={tooltipStyle(theme)} labelStyle={{ color: palette.tooltipText, fontWeight: 800 }} />
+                    <Bar dataKey="total" name="収支" radius={[0, 4, 4, 0]}>
+                      {machineData.map((entry) => (
+                        <Cell key={entry.name} fill={entry.total >= 0 ? palette.good : palette.bad} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <ChartFallback />
+              )}
+            </ChartPanel>
+
+            <ChartPanel title="店舗別収支" summary={hallSummary}>
+              {ready ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={hallData} layout="vertical" margin={{ left: 8, right: 14 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke={palette.grid} />
+                    <XAxis type="number" tickFormatter={(value) => formatAxisYen(Number(value))} tick={{ fontSize: 12, fill: palette.text }} axisLine={{ stroke: palette.grid }} tickLine={{ stroke: palette.grid }} />
+                    <YAxis dataKey="name" type="category" width={86} tick={{ fontSize: 11, fill: palette.text }} axisLine={{ stroke: palette.grid }} tickLine={{ stroke: palette.grid }} />
+                    <Tooltip formatter={chartTooltipFormatter} contentStyle={tooltipStyle(theme)} labelStyle={{ color: palette.tooltipText, fontWeight: 800 }} />
+                    <Bar dataKey="total" name="収支" radius={[0, 4, 4, 0]}>
+                      {hallData.map((entry) => (
+                        <Cell key={entry.name} fill={entry.total >= 0 ? palette.good : palette.bad} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <ChartFallback />
+              )}
+            </ChartPanel>
+
+            <section className="grid content-start gap-3 rounded-md border border-[var(--line)] bg-[var(--panel)] p-4 shadow-sm">
+              <div className="flex items-center gap-2">
+                <BarChart3 size={20} aria-hidden />
+                <h3 className="text-base font-black">投資分析</h3>
+              </div>
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3">
+                <StatCard label="平均投資" value={formatYen(totals.averageInvestment)} />
+                <StatCard label="平均回収" value={formatYen(totals.averageRecovery)} />
+                <StatCard label="最大投資" value={formatYen(totals.maxInvestment)} />
+                <StatCard label="最大回収" value={formatYen(totals.maxRecovery)} />
+                <StatCard label="総投資" value={formatYen(totals.investment)} />
+                <StatCard label="総回収" value={formatYen(totals.recovery)} />
+              </div>
+            </section>
+          </div>
+        </section>
+      )}
+
+      {activeTab === "rankings" && (
+        <section className="grid gap-4">
+          <div className="flex items-center gap-2">
+            <Trophy size={20} aria-hidden />
+            <h2 className="text-lg font-black">ランキング</h2>
+          </div>
+          <div className="grid gap-4 lg:grid-cols-2">
+            <RankingSection title="機種ランキング" top={machineRankings.top} bottom={machineRankings.bottom} />
+            <RankingSection title="店舗ランキング" top={hallRankings.top} bottom={hallRankings.bottom} />
+          </div>
+        </section>
+      )}
+
+      {activeTab === "settings" && (
+        <>
+          <section className="grid gap-3 rounded-md border border-[var(--line)] bg-[var(--panel)] p-4 shadow-sm">
+            <div className="flex items-center gap-2">
+              <WalletCards size={20} aria-hidden />
+              <h2 className="text-lg font-black">設定とデータ管理</h2>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <button type="button" onClick={loadDemoRecords} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md border border-[var(--line)] bg-[var(--panel-muted)] px-4 font-black">
+                <Plus size={18} aria-hidden />
+                サンプルデータ
+              </button>
+              <button type="button" onClick={exportJson} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md border border-[var(--line)] bg-[var(--panel-muted)] px-4 font-black">
+                <Download size={18} aria-hidden />
+                JSON Export
+              </button>
+              <button type="button" onClick={exportCsv} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md border border-[var(--line)] bg-[var(--panel-muted)] px-4 font-black">
+                <Download size={18} aria-hidden />
+                CSV Export
+              </button>
+              <button type="button" onClick={() => fileInputRef.current?.click()} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md border border-[var(--line)] bg-[var(--panel-muted)] px-4 font-black">
+                <Upload size={18} aria-hidden />
+                JSON Import
+              </button>
+            </div>
+            <button
+              type="button"
+              onClick={() => setTheme((current) => (current === "dark" ? "light" : "dark"))}
+              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md bg-[var(--teal)] px-4 font-black text-white sm:w-fit"
+              aria-pressed={theme === "dark"}
+            >
+              {theme === "dark" ? <Sun size={18} aria-hidden /> : <Moon size={18} aria-hidden />}
+              {theme === "dark" ? "ライトモードに切り替え" : "ダークモードに切り替え"}
+            </button>
+          </section>
+
+          <section className="rounded-md border border-[var(--line)] bg-[var(--panel)] p-4 shadow-sm">
+            <div className="mb-4 flex items-center gap-2">
+              <WalletCards size={20} aria-hidden />
+              <h2 className="text-lg font-black">資金設定</h2>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {[
+                ["軍資金", "bankroll"],
+                ["1日上限", "dailyLimit"],
+                ["1週間上限", "weeklyLimit"],
+                ["1ヶ月上限", "monthlyLimit"],
+              ].map(([label, key]) => (
+                <Field key={key} label={label}>
+                  <input
+                    className={inputClass()}
+                    type="number"
+                    value={settings[key as keyof BankrollSettings]}
+                    onChange={(event) => setSettings({ ...settings, [key]: sanitizeNumericInput(event.target.value) })}
+                  />
+                </Field>
+              ))}
             </div>
           </section>
-        </div>
-      </section>
 
-      <section className="rounded-md border border-[var(--line)] bg-[var(--panel)] p-4 shadow-sm">
-        <div className="mb-4 flex items-center gap-2">
-          <WalletCards size={20} aria-hidden />
-          <h2 className="text-lg font-black">資金設定</h2>
-        </div>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <section className="rounded-md border border-[var(--line)] bg-[var(--panel)] p-4 shadow-sm">
+            <button type="button" onClick={() => setIsAboutOpen((current) => !current)} className="flex min-h-12 w-full items-center justify-between gap-3 text-left font-black" aria-expanded={isAboutOpen}>
+              <span className="inline-flex items-center gap-2">
+                <HelpCircle size={20} aria-hidden />
+                このアプリについて
+              </span>
+              <span aria-hidden>{isAboutOpen ? "−" : "+"}</span>
+            </button>
+            {isAboutOpen && (
+              <div className="mt-3 grid gap-2 border-t border-[var(--line)] pt-3 text-sm font-bold leading-6 text-[var(--muted)]">
+                <p>Pachi EV Analyzer は、期待値計算、収支分析、資金管理を行うためのツールです。</p>
+                <p>ギャンブルを推奨するものではありません。確率・統計・リスク管理の学習と記録を目的としています。</p>
+                <p>データは現在、サーバーではなくブラウザの LocalStorage のみに保存されます。</p>
+              </div>
+            )}
+          </section>
+
+          <footer className="grid gap-2 border-t border-[var(--line)] pt-5 text-center text-sm font-bold text-[var(--muted)]">
+            <p>Version 0.2.0</p>
+            <p>Open Source Project</p>
+            <p>MIT License</p>
+            <a className="inline-flex items-center justify-center gap-2 text-[var(--teal-dark)]" href={GITHUB_URL} target="_blank" rel="noreferrer">
+              <GitFork size={18} aria-hidden />
+              GitHub
+            </a>
+          </footer>
+        </>
+      )}
+
+      <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-[var(--line)] bg-[var(--panel)]/95 shadow-[0_-10px_30px_rgba(15,23,42,0.08)] backdrop-blur">
+        <div className="mx-auto grid max-w-6xl grid-cols-5 gap-1 px-2 py-2">
           {[
-            ["軍資金", "bankroll"],
-            ["1日上限", "dailyLimit"],
-            ["1週間上限", "weeklyLimit"],
-            ["1ヶ月上限", "monthlyLimit"],
-          ].map(([label, key]) => (
-            <Field key={key} label={label}>
-              <input
-                className={inputClass()}
-                type="number"
-                value={settings[key as keyof BankrollSettings]}
-                onChange={(event) => setSettings({ ...settings, [key]: sanitizeNumericInput(event.target.value) })}
-              />
-            </Field>
-          ))}
+            { id: "home" as const, label: "Home", Icon: PiggyBank },
+            { id: "record" as const, label: "Record", Icon: Plus },
+            { id: "analytics" as const, label: "Analytics", Icon: LineChart },
+            { id: "rankings" as const, label: "Rankings", Icon: Trophy },
+            { id: "settings" as const, label: "Settings", Icon: WalletCards },
+          ].map(({ id, label, Icon }) => {
+            const isActive = activeTab === id;
+            return (
+              <button
+                key={id}
+                type="button"
+                onClick={() => setActiveTab(id)}
+                className={`grid min-h-14 place-items-center gap-1 rounded-md px-1 text-[11px] font-black transition ${
+                  isActive ? "bg-[var(--good-bg)] text-[var(--teal-dark)]" : "text-[var(--muted)] hover:bg-[var(--panel-muted)]"
+                }`}
+                aria-current={isActive ? "page" : undefined}
+              >
+                <Icon size={19} aria-hidden />
+                <span className="truncate">{label}</span>
+              </button>
+            );
+          })}
         </div>
-      </section>
-
-      <section className="grid gap-3 rounded-md border border-[var(--line)] bg-[var(--panel)] p-4 shadow-sm">
-        <h2 className="text-lg font-black">収支一覧</h2>
-        {sortedRecords.length === 0 ? (
-          <p className="rounded-md bg-[var(--panel-muted)] px-3 py-8 text-center text-sm font-bold text-[var(--muted)]">
-            まだ収支レコードがありません
-          </p>
-        ) : (
-          <div className="grid gap-3">
-            {sortedRecords.map((record) => {
-              const profit = profitOf(record);
-              return (
-                <article key={record.id} className="grid min-w-0 gap-3 rounded-md border border-[var(--line)] bg-[var(--panel)] p-3">
-                  <div className="flex min-w-0 items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="text-xs font-bold text-[var(--muted)]">{record.date}</p>
-                      <h3 className="truncate text-base font-black">{record.machine}</h3>
-                      <p className="truncate text-sm font-bold text-[var(--muted)]">{record.hall}</p>
-                    </div>
-                    <button
-                      type="button"
-                      aria-label="削除"
-                      title="削除"
-                      onClick={() => setRecords((current) => current.filter((row) => row.id !== record.id))}
-                      className="inline-flex size-11 shrink-0 items-center justify-center rounded-md border border-[var(--line)] bg-[var(--panel)]"
-                    >
-                      <Trash2 size={17} aria-hidden />
-                    </button>
-                  </div>
-                  <div className="grid grid-cols-2 gap-2 text-sm sm:grid-cols-4">
-                    <RecordMetric label="投資" value={formatYen(record.investment)} />
-                    <RecordMetric label="回収" value={formatYen(record.recovery)} />
-                    <RecordMetric label="差玉・差枚" value={`${number.format(record.unitDiff)} ${record.type}`} />
-                    <RecordMetric label="収支" value={formatSignedYen(profit)} tone={valueTone(profit)} />
-                  </div>
-                  {record.memo && <p className="text-sm font-bold text-[var(--muted)]">{record.memo}</p>}
-                </article>
-              );
-            })}
-          </div>
-        )}
-      </section>
-
-      <footer className="grid gap-2 border-t border-[var(--line)] pt-5 text-center text-sm font-bold text-[var(--muted)]">
-        <p>Version 0.2.0</p>
-        <p>Open Source Project</p>
-        <p>MIT License</p>
-        <a className="inline-flex items-center justify-center gap-2 text-[var(--teal-dark)]" href={GITHUB_URL} target="_blank" rel="noreferrer">
-          <GitFork size={18} aria-hidden />
-          GitHub
-        </a>
-      </footer>
+      </nav>
     </main>
   );
 }
