@@ -241,6 +241,12 @@ function balanceTooltipFormatter(value: unknown) {
   return [formatYen(Number(value)), "残高"] as [string, string];
 }
 
+function escapeCsvCell(value: string | number) {
+  const text = String(value).replace(/\r?\n/g, " ");
+  if (/[",\r\n]/.test(text)) return `"${text.replace(/"/g, '""')}"`;
+  return text;
+}
+
 function DashboardCard({
   label,
   value,
@@ -609,6 +615,31 @@ export default function Home() {
     URL.revokeObjectURL(url);
   }
 
+  function exportCsv() {
+    const headers = ["date", "machine", "store", "investment", "return", "profit", "memo"];
+    const rows = [...records]
+      .sort((a, b) => a.date.localeCompare(b.date))
+      .map((record) => [
+        record.date,
+        record.machine,
+        record.hall,
+        record.investment,
+        record.recovery,
+        profitOf(record),
+        record.memo,
+      ]);
+    const csv = [headers, ...rows].map((row) => row.map(escapeCsvCell).join(",")).join("\r\n");
+    const blob = new Blob([`\uFEFF${csv}`], {
+      type: "text/csv;charset=utf-8",
+    });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = `pachi-ev-analyzer-records-${new Date().toISOString().slice(0, 10)}.csv`;
+    anchor.click();
+    URL.revokeObjectURL(url);
+  }
+
   function loadDemoRecords() {
     setRecords(demoRecords);
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(demoRecords));
@@ -650,6 +681,14 @@ export default function Home() {
             >
               <Download size={18} aria-hidden />
               JSON
+            </button>
+            <button
+              type="button"
+              onClick={exportCsv}
+              className="inline-flex min-h-12 items-center gap-2 rounded-md border border-[var(--line)] bg-[var(--panel)] px-4 text-sm font-black shadow-sm"
+            >
+              <Download size={18} aria-hidden />
+              CSV
             </button>
           </div>
         </div>
