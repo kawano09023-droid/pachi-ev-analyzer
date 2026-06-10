@@ -33,7 +33,7 @@ import {
 
 const STORAGE_KEY = "pachi-ev-analyzer-records-v1";
 const SETTINGS_KEY = "pachi-ev-analyzer-settings-v1";
-const GITHUB_URL = "https://github.com/pachi-ev-analyzer/pachi-ev-analyzer";
+const GITHUB_URL = "https://github.com/kawano09023-droid/pachi-ev-analyzer";
 
 type RecordType = "玉" | "枚";
 type Tone = "neutral" | "good" | "bad";
