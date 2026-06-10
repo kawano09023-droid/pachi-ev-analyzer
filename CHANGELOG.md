@@ -2,12 +2,12 @@
 
 ## 0.2.0
 
-- PWA support
-- Dark mode
-- CSV export
-- JSON import
-- Dashboard analytics
-- Bankroll management
+- Added Progressive Web App support
+- Added Dark Mode support
+- Added CSV export
+- Added JSON import
+- Improved documentation for OSS release
+- Updated README for current feature set
 
 ## 0.1.0
 

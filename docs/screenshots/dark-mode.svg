@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="800" viewBox="0 0 1280 800" role="img" aria-labelledby="title desc">
+  <title id="title">Pachi EV Analyzer dark mode screenshot preview</title>
+  <desc id="desc">Dark mode preview of the dashboard with readable cards and charts.</desc>
+  <rect width="1280" height="800" fill="#101512"/>
+  <rect x="64" y="48" width="1152" height="704" rx="18" fill="#18211d" stroke="#2f3d37"/>
+  <text x="104" y="116" font-family="Arial, sans-serif" font-size="42" font-weight="800" fill="#edf5f1">Pachi EV Analyzer</text>
+  <text x="104" y="158" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#a5b4ad">Dark mode dashboard</text>
+  <g transform="translate(104 218)">
+    <rect width="250" height="128" rx="10" fill="#0f2e2a" stroke="#246d63"/>
+    <text x="24" y="44" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#a5b4ad">Total Profit</text>
+    <text x="24" y="92" font-family="Arial, sans-serif" font-size="38" font-weight="900" fill="#5eead4">+52,000円</text>
+  </g>
+  <g transform="translate(382 218)">
+    <rect width="250" height="128" rx="10" fill="#202b26" stroke="#2f3d37"/>
+    <text x="24" y="44" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#a5b4ad">Win Rate</text>
+    <text x="24" y="92" font-family="Arial, sans-serif" font-size="38" font-weight="900" fill="#edf5f1">58.3%</text>
+  </g>
+  <g transform="translate(660 218)">
+    <rect width="250" height="128" rx="10" fill="#35151d" stroke="#793144"/>
+    <text x="24" y="44" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#a5b4ad">Lowest Month</text>
+    <text x="24" y="92" font-family="Arial, sans-serif" font-size="38" font-weight="900" fill="#fb7185">-45,000円</text>
+  </g>
+  <rect x="104" y="414" width="1084" height="248" rx="10" fill="#202b26" stroke="#2f3d37"/>
+  <text x="136" y="466" font-family="Arial, sans-serif" font-size="26" font-weight="800" fill="#edf5f1">Readable charts in dark mode</text>
+  <line x1="136" y1="628" x2="1148" y2="628" stroke="#31423b" stroke-width="2"/>
+  <polyline points="150,600 280,552 410,584 540,508 670,540 800,470 930,514 1060,438" fill="none" stroke="#2dd4bf" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

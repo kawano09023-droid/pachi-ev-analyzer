@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="800" viewBox="0 0 1280 800" role="img" aria-labelledby="title desc">
+  <title id="title">Pachi EV Analyzer import export tools screenshot preview</title>
+  <desc id="desc">Preview of sample data, JSON import, JSON export, and CSV export controls.</desc>
+  <rect width="1280" height="800" fill="#f7f8f5"/>
+  <rect x="96" y="88" width="1088" height="624" rx="18" fill="#ffffff" stroke="#d9dfd7"/>
+  <text x="148" y="156" font-family="Arial, sans-serif" font-size="38" font-weight="900" fill="#17211d">Import / Export tools</text>
+  <text x="148" y="196" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#69746f">Backup and restore LocalStorage records</text>
+  <g transform="translate(148 270)">
+    <rect width="220" height="72" rx="10" fill="#eef7f4" stroke="#9accc3"/>
+    <text x="34" y="46" font-family="Arial, sans-serif" font-size="22" font-weight="900" fill="#115e59">Sample Data</text>
+  </g>
+  <g transform="translate(400 270)">
+    <rect width="220" height="72" rx="10" fill="#ffffff" stroke="#d9dfd7"/>
+    <text x="58" y="46" font-family="Arial, sans-serif" font-size="22" font-weight="900" fill="#17211d">JSON</text>
+  </g>
+  <g transform="translate(652 270)">
+    <rect width="220" height="72" rx="10" fill="#ffffff" stroke="#d9dfd7"/>
+    <text x="52" y="46" font-family="Arial, sans-serif" font-size="22" font-weight="900" fill="#17211d">Import</text>
+  </g>
+  <g transform="translate(904 270)">
+    <rect width="220" height="72" rx="10" fill="#ffffff" stroke="#d9dfd7"/>
+    <text x="70" y="46" font-family="Arial, sans-serif" font-size="22" font-weight="900" fill="#17211d">CSV</text>
+  </g>
+  <rect x="148" y="420" width="976" height="168" rx="12" fill="#f5f7f4" stroke="#d9dfd7"/>
+  <text x="184" y="480" font-family="Arial, sans-serif" font-size="24" font-weight="900" fill="#17211d">JSON import validates records before replacing data.</text>
+  <text x="184" y="530" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#69746f">CSV export uses UTF-8 BOM for Japanese Excel compatibility.</text>
+</svg>

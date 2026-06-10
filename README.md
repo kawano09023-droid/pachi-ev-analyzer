@@ -10,9 +10,9 @@ The project focuses on statistics, risk management, and data visualization rathe
 
 ## Project Status
 
-This project is currently in early development as a personal open-source project.
-
 Version: 0.2.0
+
+This project is actively maintained as a personal open-source analytics tool.
 
 ## Live Demo
 
@@ -22,11 +22,15 @@ https://pachi-ev-analyzer.vercel.app
 
 ## Screenshots
 
-The app includes dashboard KPIs, expected value calculation, bankroll tracking, import/export tools, and analytics charts.
+The app includes dashboard KPIs, expected value calculation, bankroll tracking, import/export tools, analytics charts, and dark mode.
 
-| Dashboard | Expected Value Calculator | Analytics Graphs |
+| Dashboard overview | Expected value calculator | Analytics charts |
 | --- | --- | --- |
-| ![Dashboard screen](docs/screenshots/dashboard.svg) | ![Expected value calculator screen](docs/screenshots/expected-value.svg) | ![Analytics graphs screen](docs/screenshots/analytics.svg) |
+| ![Dashboard overview](docs/screenshots/dashboard.svg) | ![Expected value calculator](docs/screenshots/expected-value.svg) | ![Analytics charts](docs/screenshots/analytics.svg) |
+
+| Dark mode | Import / Export tools |
+| --- | --- |
+| ![Dark mode](docs/screenshots/dark-mode.svg) | ![Import and export tools](docs/screenshots/import-export.svg) |
 
 ## Features
 
@@ -36,12 +40,15 @@ The app includes dashboard KPIs, expected value calculation, bankroll tracking, 
 - Monthly Profit Analysis
 - Machine Performance Analysis
 - Store Performance Analysis
+- Weekday Analysis
 - Risk Monitoring
 - JSON Backup Export
 - JSON Import
 - CSV Export
 - PWA Support
-- Dark Mode
+- Dark Mode Support
+- Sample Data Loader
+- LocalStorage-based privacy-first storage
 
 ## Why This Project Exists
 
@@ -108,26 +115,19 @@ PNG files can also be used. If you switch to PNG, update the image paths in this
 
 ## Roadmap
 
-### Version 0.2.0
-
-Completed:
+### Completed
 
 - PWA Support
 - Dark Mode
 - CSV Export
 - JSON Import
-- Dashboard Analytics
-- Bankroll Management
 
-### Version 0.3
+### Planned
 
 - Advanced Analytics
-- Yearly Statistics
-- Performance Ranking
-
-### Version 0.4
-
+- Performance Rankings
 - Risk Simulation
+- Additional Import / Export Options
 - Historical Trend Analysis
 
 ## Release Notes
