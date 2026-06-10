@@ -7,10 +7,41 @@
   --muted: #69746f;
   --line: #d9dfd7;
   --panel: #ffffff;
+  --panel-muted: #f5f7f4;
+  --field: #ffffff;
+  --field-text: #17211d;
+  --good-bg: #e9f7f4;
+  --good-line: #9accc3;
+  --bad-bg: #fff1f3;
+  --bad-line: #f0b8c4;
+  --chart-grid: #d9dfd7;
+  --chart-text: #69746f;
   --teal: #0f766e;
   --teal-dark: #115e59;
   --amber: #b7791f;
   --rose: #be123c;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --background: #101512;
+  --foreground: #edf5f1;
+  --muted: #a5b4ad;
+  --line: #2f3d37;
+  --panel: #18211d;
+  --panel-muted: #202b26;
+  --field: #111916;
+  --field-text: #f3faf6;
+  --good-bg: #0f2e2a;
+  --good-line: #246d63;
+  --bad-bg: #35151d;
+  --bad-line: #793144;
+  --chart-grid: #31423b;
+  --chart-text: #b6c4be;
+  --teal: #2dd4bf;
+  --teal-dark: #5eead4;
+  --amber: #f2c94c;
+  --rose: #fb7185;
 }
 
 * {
@@ -28,6 +59,12 @@ body {
   font-family: Arial, "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
 }
 
+[data-theme="dark"] body {
+  background:
+    linear-gradient(180deg, rgba(45, 212, 191, 0.12), transparent 280px),
+    var(--background);
+}
+
 button,
 input,
 textarea,
@@ -37,4 +74,14 @@ select {
 
 button {
   cursor: pointer;
+}
+
+input,
+textarea,
+select {
+  color: var(--field-text);
+}
+
+::placeholder {
+  color: var(--muted);
 }

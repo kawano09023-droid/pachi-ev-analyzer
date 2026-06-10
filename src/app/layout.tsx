@@ -41,6 +41,12 @@ export default function RootLayout({
       <head>
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="mobile-web-app-capable" content="yes" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "try{var t=localStorage.getItem('pachi-ev-analyzer-theme-v1');if(t==='dark'||t==='light'){document.documentElement.dataset.theme=t;}}catch(e){}",
+          }}
+        />
       </head>
       <body>
         <ServiceWorkerRegister />

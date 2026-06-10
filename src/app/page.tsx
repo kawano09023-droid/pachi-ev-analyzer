@@ -10,9 +10,11 @@ import {
   GitFork,
   HelpCircle,
   LineChart,
+  Moon,
   PiggyBank,
   Plus,
   ShieldAlert,
+  Sun,
   Trash2,
   TrendingUp,
   Trophy,
@@ -33,10 +35,12 @@ import {
 
 const STORAGE_KEY = "pachi-ev-analyzer-records-v1";
 const SETTINGS_KEY = "pachi-ev-analyzer-settings-v1";
+const THEME_STORAGE_KEY = "pachi-ev-analyzer-theme-v1";
 const GITHUB_URL = "https://github.com/kawano09023-droid/pachi-ev-analyzer";
 
 type RecordType = "玉" | "枚";
 type Tone = "neutral" | "good" | "bad";
+type Theme = "light" | "dark";
 type EvRank = "S" | "A" | "B" | "C" | "D";
 
 type PachiRecord = {
@@ -191,6 +195,30 @@ function toneClass(tone: Tone) {
   return "";
 }
 
+function chartPalette(theme: Theme) {
+  return {
+    grid: theme === "dark" ? "#31423b" : "#d9dfd7",
+    text: theme === "dark" ? "#b6c4be" : "#69746f",
+    tooltipBg: theme === "dark" ? "#18211d" : "#ffffff",
+    tooltipBorder: theme === "dark" ? "#2f3d37" : "#d9dfd7",
+    tooltipText: theme === "dark" ? "#edf5f1" : "#17211d",
+    good: theme === "dark" ? "#2dd4bf" : "#0f766e",
+    bad: theme === "dark" ? "#fb7185" : "#be123c",
+    amber: theme === "dark" ? "#f2c94c" : "#b7791f",
+  };
+}
+
+function tooltipStyle(theme: Theme) {
+  const palette = chartPalette(theme);
+  return {
+    backgroundColor: palette.tooltipBg,
+    border: `1px solid ${palette.tooltipBorder}`,
+    borderRadius: 8,
+    color: palette.tooltipText,
+    fontWeight: 700,
+  };
+}
+
 function valueTone(value: number): Tone {
   if (value > 0) return "good";
   if (value < 0) return "bad";
@@ -264,7 +292,7 @@ function SummaryStrip({
   return (
     <div className="mb-3 grid grid-cols-3 gap-2">
       {items.map((item) => (
-        <div key={item.label} className="min-w-0 rounded-md bg-[#f5f7f4] p-2">
+        <div key={item.label} className="min-w-0 rounded-md bg-[var(--panel-muted)] p-2">
           <p className="truncate text-xs font-bold text-[var(--muted)]">{item.label}</p>
           <p className={`mt-1 break-words text-sm font-black ${toneClass(item.tone ?? "neutral")}`}>
             {item.value}
@@ -277,7 +305,7 @@ function SummaryStrip({
 
 function ChartFallback() {
   return (
-    <div className="grid h-full min-h-48 place-items-center rounded-md border border-dashed border-[var(--line)] bg-[#f8faf7] text-sm font-bold text-[var(--muted)]">
+    <div className="grid h-full min-h-48 place-items-center rounded-md border border-dashed border-[var(--line)] bg-[var(--panel-muted)] text-sm font-bold text-[var(--muted)]">
       データ待機中
     </div>
   );
@@ -311,7 +339,7 @@ function Field({
   children: React.ReactNode;
 }) {
   return (
-    <label className="grid min-w-0 gap-1.5 text-sm font-bold text-[#24302c]">
+    <label className="grid min-w-0 gap-1.5 text-sm font-bold text-[var(--foreground)]">
       {label}
       {children}
       {help && <span className="text-xs font-bold leading-5 text-[var(--muted)]">{help}</span>}
@@ -320,7 +348,7 @@ function Field({
 }
 
 function inputClass() {
-  return "min-h-12 w-full min-w-0 rounded-md border border-[var(--line)] bg-white px-3 text-base outline-none transition focus:border-[var(--teal)] focus:ring-2 focus:ring-[rgba(15,118,110,0.18)]";
+  return "min-h-12 w-full min-w-0 rounded-md border border-[var(--line)] bg-[var(--field)] px-3 text-base outline-none transition focus:border-[var(--teal)] focus:ring-2 focus:ring-[rgba(15,118,110,0.22)]";
 }
 
 export default function Home() {
@@ -330,10 +358,12 @@ export default function Home() {
   const [ready, setReady] = useState(false);
   const [isRecordFormOpen, setIsRecordFormOpen] = useState(false);
   const [isAboutOpen, setIsAboutOpen] = useState(false);
+  const [theme, setTheme] = useState<Theme>("light");
 
   useEffect(() => {
     const storedRecords = window.localStorage.getItem(STORAGE_KEY);
     const storedSettings = window.localStorage.getItem(SETTINGS_KEY);
+    const storedTheme = window.localStorage.getItem(THEME_STORAGE_KEY) as Theme | null;
 
     if (storedRecords) {
       setRecords(JSON.parse(storedRecords));
@@ -346,8 +376,18 @@ export default function Home() {
       setSettings({ ...initialSettings, ...JSON.parse(storedSettings) });
     }
 
+    if (storedTheme === "light" || storedTheme === "dark") {
+      setTheme(storedTheme);
+      document.documentElement.dataset.theme = storedTheme;
+    }
+
     setReady(true);
   }, []);
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    if (ready) window.localStorage.setItem(THEME_STORAGE_KEY, theme);
+  }, [ready, theme]);
 
   useEffect(() => {
     if (ready) window.localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
@@ -574,6 +614,8 @@ export default function Home() {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(demoRecords));
   }
 
+  const palette = chartPalette(theme);
+
   return (
     <main className="mx-auto grid w-full max-w-6xl gap-5 overflow-x-hidden px-3 py-4 pb-12 sm:gap-6 sm:px-6 lg:px-8">
       <header className="grid gap-3 border-b border-[var(--line)] pb-4">
@@ -585,8 +627,18 @@ export default function Home() {
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
+              onClick={() => setTheme((current) => (current === "dark" ? "light" : "dark"))}
+              className="inline-flex min-h-12 items-center gap-2 rounded-md border border-[var(--line)] bg-[var(--panel)] px-4 text-sm font-black shadow-sm"
+              aria-label={theme === "dark" ? "ライトモードに切り替え" : "ダークモードに切り替え"}
+              aria-pressed={theme === "dark"}
+            >
+              {theme === "dark" ? <Sun size={18} aria-hidden /> : <Moon size={18} aria-hidden />}
+              {theme === "dark" ? "Light" : "Dark"}
+            </button>
+            <button
+              type="button"
               onClick={loadDemoRecords}
-              className="inline-flex min-h-12 items-center gap-2 rounded-md border border-[var(--line)] bg-white px-4 text-sm font-black shadow-sm"
+              className="inline-flex min-h-12 items-center gap-2 rounded-md border border-[var(--line)] bg-[var(--panel)] px-4 text-sm font-black shadow-sm"
             >
               <BarChart3 size={18} aria-hidden />
               サンプルデータ読み込み
@@ -594,7 +646,7 @@ export default function Home() {
             <button
               type="button"
               onClick={exportJson}
-              className="inline-flex min-h-12 items-center gap-2 rounded-md border border-[var(--line)] bg-white px-4 text-sm font-black shadow-sm"
+              className="inline-flex min-h-12 items-center gap-2 rounded-md border border-[var(--line)] bg-[var(--panel)] px-4 text-sm font-black shadow-sm"
             >
               <Download size={18} aria-hidden />
               JSON
@@ -602,7 +654,7 @@ export default function Home() {
           </div>
         </div>
 
-        <section className="rounded-md border border-[var(--line)] bg-white shadow-sm">
+        <section className="rounded-md border border-[var(--line)] bg-[var(--panel)] shadow-sm">
           <button
             type="button"
             onClick={() => setIsAboutOpen((current) => !current)}
@@ -632,7 +684,7 @@ export default function Home() {
       </section>
 
       {warnings.length > 0 && (
-        <section className="grid gap-2 rounded-md border border-[#f0b8c4] bg-[#fff1f3] p-4 text-sm font-bold text-[var(--rose)]">
+        <section className="grid gap-2 rounded-md border border-[var(--bad-line)] bg-[var(--bad-bg)] p-4 text-sm font-bold text-[var(--rose)]">
           {warnings.map((warning) => (
             <p key={warning} className="flex items-start gap-2">
               <AlertTriangle size={18} aria-hidden />
@@ -686,8 +738,8 @@ export default function Home() {
         <div
           className={`mt-3 rounded-md border p-4 text-sm font-black leading-6 ${
             evResult.rotationDiff >= 0
-              ? "border-[#9accc3] bg-[#e9f7f4] text-[var(--teal-dark)]"
-              : "border-[#f0b8c4] bg-[#fff1f3] text-[var(--rose)]"
+              ? "border-[var(--good-line)] bg-[var(--good-bg)] text-[var(--teal-dark)]"
+              : "border-[var(--bad-line)] bg-[var(--bad-bg)] text-[var(--rose)]"
           }`}
         >
           {evResult.comment}
@@ -761,13 +813,13 @@ export default function Home() {
             {ready ? (
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={monthlyData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" tick={{ fontSize: 12 }} />
-                  <YAxis tickFormatter={(value) => formatAxisYen(Number(value))} width={54} tick={{ fontSize: 12 }} />
-                  <Tooltip formatter={chartTooltipFormatter} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={palette.grid} />
+                  <XAxis dataKey="month" tick={{ fontSize: 12, fill: palette.text }} axisLine={{ stroke: palette.grid }} tickLine={{ stroke: palette.grid }} />
+                  <YAxis tickFormatter={(value) => formatAxisYen(Number(value))} width={54} tick={{ fontSize: 12, fill: palette.text }} axisLine={{ stroke: palette.grid }} tickLine={{ stroke: palette.grid }} />
+                  <Tooltip formatter={chartTooltipFormatter} contentStyle={tooltipStyle(theme)} labelStyle={{ color: palette.tooltipText, fontWeight: 800 }} />
                   <Bar dataKey="net" name="収支" radius={[4, 4, 0, 0]}>
                     {monthlyData.map((entry) => (
-                      <Cell key={entry.month} fill={entry.net >= 0 ? "#0f766e" : "#be123c"} />
+                      <Cell key={entry.month} fill={entry.net >= 0 ? palette.good : palette.bad} />
                     ))}
                   </Bar>
                 </BarChart>
@@ -781,11 +833,11 @@ export default function Home() {
             {ready ? (
               <ResponsiveContainer width="100%" height="100%">
                 <ReLineChart data={balanceData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" tick={{ fontSize: 12 }} />
-                  <YAxis tickFormatter={(value) => formatAxisYen(Number(value))} width={54} tick={{ fontSize: 12 }} />
-                  <Tooltip formatter={balanceTooltipFormatter} />
-                  <Line dataKey="balance" name="残高" stroke="#0f766e" strokeWidth={3} dot={{ r: 3 }} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={palette.grid} />
+                  <XAxis dataKey="date" tick={{ fontSize: 12, fill: palette.text }} axisLine={{ stroke: palette.grid }} tickLine={{ stroke: palette.grid }} />
+                  <YAxis tickFormatter={(value) => formatAxisYen(Number(value))} width={54} tick={{ fontSize: 12, fill: palette.text }} axisLine={{ stroke: palette.grid }} tickLine={{ stroke: palette.grid }} />
+                  <Tooltip formatter={balanceTooltipFormatter} contentStyle={tooltipStyle(theme)} labelStyle={{ color: palette.tooltipText, fontWeight: 800 }} />
+                  <Line dataKey="balance" name="残高" stroke={palette.good} strokeWidth={3} dot={{ r: 3, fill: palette.good }} />
                 </ReLineChart>
               </ResponsiveContainer>
             ) : (
@@ -797,13 +849,13 @@ export default function Home() {
             {ready ? (
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={machineData} layout="vertical" margin={{ left: 8, right: 14 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis type="number" tickFormatter={(value) => formatAxisYen(Number(value))} tick={{ fontSize: 12 }} />
-                  <YAxis dataKey="name" type="category" width={86} tick={{ fontSize: 11 }} />
-                  <Tooltip formatter={chartTooltipFormatter} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={palette.grid} />
+                  <XAxis type="number" tickFormatter={(value) => formatAxisYen(Number(value))} tick={{ fontSize: 12, fill: palette.text }} axisLine={{ stroke: palette.grid }} tickLine={{ stroke: palette.grid }} />
+                  <YAxis dataKey="name" type="category" width={86} tick={{ fontSize: 11, fill: palette.text }} axisLine={{ stroke: palette.grid }} tickLine={{ stroke: palette.grid }} />
+                  <Tooltip formatter={chartTooltipFormatter} contentStyle={tooltipStyle(theme)} labelStyle={{ color: palette.tooltipText, fontWeight: 800 }} />
                   <Bar dataKey="total" name="収支" radius={[0, 4, 4, 0]}>
                     {machineData.map((entry) => (
-                      <Cell key={entry.name} fill={entry.total >= 0 ? "#0f766e" : "#be123c"} />
+                      <Cell key={entry.name} fill={entry.total >= 0 ? palette.good : palette.bad} />
                     ))}
                   </Bar>
                 </BarChart>
@@ -817,13 +869,13 @@ export default function Home() {
             {ready ? (
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={hallData} layout="vertical" margin={{ left: 8, right: 14 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis type="number" tickFormatter={(value) => formatAxisYen(Number(value))} tick={{ fontSize: 12 }} />
-                  <YAxis dataKey="name" type="category" width={86} tick={{ fontSize: 11 }} />
-                  <Tooltip formatter={chartTooltipFormatter} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={palette.grid} />
+                  <XAxis type="number" tickFormatter={(value) => formatAxisYen(Number(value))} tick={{ fontSize: 12, fill: palette.text }} axisLine={{ stroke: palette.grid }} tickLine={{ stroke: palette.grid }} />
+                  <YAxis dataKey="name" type="category" width={86} tick={{ fontSize: 11, fill: palette.text }} axisLine={{ stroke: palette.grid }} tickLine={{ stroke: palette.grid }} />
+                  <Tooltip formatter={chartTooltipFormatter} contentStyle={tooltipStyle(theme)} labelStyle={{ color: palette.tooltipText, fontWeight: 800 }} />
                   <Bar dataKey="total" name="収支" radius={[0, 4, 4, 0]}>
                     {hallData.map((entry) => (
-                      <Cell key={entry.name} fill={entry.total >= 0 ? "#0f766e" : "#be123c"} />
+                      <Cell key={entry.name} fill={entry.total >= 0 ? palette.good : palette.bad} />
                     ))}
                   </Bar>
                 </BarChart>
@@ -837,11 +889,11 @@ export default function Home() {
             {ready ? (
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={weekdayData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="day" tick={{ fontSize: 12 }} />
-                  <YAxis tickFormatter={(value) => formatAxisYen(Number(value))} width={54} tick={{ fontSize: 12 }} />
-                  <Tooltip formatter={chartTooltipFormatter} />
-                  <Bar dataKey="total" name="収支" fill="#b7791f" radius={[4, 4, 0, 0]} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={palette.grid} />
+                  <XAxis dataKey="day" tick={{ fontSize: 12, fill: palette.text }} axisLine={{ stroke: palette.grid }} tickLine={{ stroke: palette.grid }} />
+                  <YAxis tickFormatter={(value) => formatAxisYen(Number(value))} width={54} tick={{ fontSize: 12, fill: palette.text }} axisLine={{ stroke: palette.grid }} tickLine={{ stroke: palette.grid }} />
+                  <Tooltip formatter={chartTooltipFormatter} contentStyle={tooltipStyle(theme)} labelStyle={{ color: palette.tooltipText, fontWeight: 800 }} />
+                  <Bar dataKey="total" name="収支" fill={palette.amber} radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             ) : (
@@ -893,7 +945,7 @@ export default function Home() {
       <section className="grid gap-3 rounded-md border border-[var(--line)] bg-[var(--panel)] p-4 shadow-sm">
         <h2 className="text-lg font-black">収支一覧</h2>
         {sortedRecords.length === 0 ? (
-          <p className="rounded-md bg-[#eef1ed] px-3 py-8 text-center text-sm font-bold text-[var(--muted)]">
+          <p className="rounded-md bg-[var(--panel-muted)] px-3 py-8 text-center text-sm font-bold text-[var(--muted)]">
             まだ収支レコードがありません
           </p>
         ) : (
@@ -901,7 +953,7 @@ export default function Home() {
             {sortedRecords.map((record) => {
               const profit = profitOf(record);
               return (
-                <article key={record.id} className="grid min-w-0 gap-3 rounded-md border border-[var(--line)] bg-white p-3">
+                <article key={record.id} className="grid min-w-0 gap-3 rounded-md border border-[var(--line)] bg-[var(--panel)] p-3">
                   <div className="flex min-w-0 items-start justify-between gap-3">
                     <div className="min-w-0">
                       <p className="text-xs font-bold text-[var(--muted)]">{record.date}</p>
@@ -913,7 +965,7 @@ export default function Home() {
                       aria-label="削除"
                       title="削除"
                       onClick={() => setRecords((current) => current.filter((row) => row.id !== record.id))}
-                      className="inline-flex size-11 shrink-0 items-center justify-center rounded-md border border-[var(--line)] bg-white"
+                      className="inline-flex size-11 shrink-0 items-center justify-center rounded-md border border-[var(--line)] bg-[var(--panel)]"
                     >
                       <Trash2 size={17} aria-hidden />
                     </button>
@@ -955,7 +1007,7 @@ function RecordMetric({
   tone?: Tone;
 }) {
   return (
-    <div className="min-w-0 rounded-md bg-[#f5f7f4] p-2">
+    <div className="min-w-0 rounded-md bg-[var(--panel-muted)] p-2">
       <p className="text-xs font-bold text-[var(--muted)]">{label}</p>
       <p className={`mt-1 break-words text-sm font-black ${toneClass(tone)}`}>{value}</p>
     </div>
