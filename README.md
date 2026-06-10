@@ -12,7 +12,7 @@ The project focuses on statistics, risk management, and data visualization rathe
 
 This project is currently in early development as a personal open-source project.
 
-Version: 0.1.0
+Version: 0.2.0
 
 ## Live Demo
 
@@ -22,6 +22,8 @@ https://pachi-ev-analyzer.vercel.app
 
 ## Screenshots
 
+The app includes dashboard KPIs, expected value calculation, bankroll tracking, import/export tools, and analytics charts.
+
 | Dashboard | Expected Value Calculator | Analytics Graphs |
 | --- | --- | --- |
 | ![Dashboard screen](docs/screenshots/dashboard.svg) | ![Expected value calculator screen](docs/screenshots/expected-value.svg) | ![Analytics graphs screen](docs/screenshots/analytics.svg) |
@@ -30,11 +32,16 @@ https://pachi-ev-analyzer.vercel.app
 
 - Expected Value Calculator
 - Bankroll Management
+- Dashboard Analytics
 - Monthly Profit Analysis
 - Machine Performance Analysis
 - Store Performance Analysis
 - Risk Monitoring
 - JSON Backup Export
+- JSON Import
+- CSV Export
+- PWA Support
+- Dark Mode
 
 ## Why This Project Exists
 
@@ -101,12 +108,16 @@ PNG files can also be used. If you switch to PNG, update the image paths in this
 
 ## Roadmap
 
-### Version 0.2
+### Version 0.2.0
+
+Completed:
 
 - PWA Support
 - Dark Mode
 - CSV Export
-- Data Import
+- JSON Import
+- Dashboard Analytics
+- Bankroll Management
 
 ### Version 0.3
 
@@ -118,6 +129,17 @@ PNG files can also be used. If you switch to PNG, update the image paths in this
 
 - Risk Simulation
 - Historical Trend Analysis
+
+## Release Notes
+
+### v0.2.0
+
+- Added PWA support with installability metadata, app icons, and a service worker.
+- Added light/dark theme support with LocalStorage persistence.
+- Added CSV export for profit/loss records.
+- Added JSON import for restoring backed-up records.
+- Improved dashboard analytics for monthly, machine, store, and weekday performance.
+- Improved bankroll management and risk visibility.
 
 ## Contributing
 

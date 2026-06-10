@@ -1131,7 +1131,7 @@ export default function Home() {
       </section>
 
       <footer className="grid gap-2 border-t border-[var(--line)] pt-5 text-center text-sm font-bold text-[var(--muted)]">
-        <p>Version 0.1.0</p>
+        <p>Version 0.2.0</p>
         <p>Open Source Project</p>
         <p>MIT License</p>
         <a className="inline-flex items-center justify-center gap-2 text-[var(--teal-dark)]" href={GITHUB_URL} target="_blank" rel="noreferrer">

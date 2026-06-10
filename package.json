@@ -1,6 +1,6 @@
 {
   "name": "pachi-ev-analyzer",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Open-source dashboard for pachinko expected value calculation, bankroll management, and performance analytics.",
   "private": true,
   "scripts": {
