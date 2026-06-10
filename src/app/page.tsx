@@ -44,6 +44,14 @@ type Tone = "neutral" | "good" | "bad";
 type Theme = "light" | "dark";
 type EvRank = "S" | "A" | "B" | "C" | "D";
 
+type RankingItem = {
+  name: string;
+  total: number;
+  average: number;
+  winRate: number;
+  sessions: number;
+};
+
 type PachiRecord = {
   id: string;
   date: string;
@@ -234,6 +242,13 @@ function evRank(evPer1k: number): EvRank {
   return "D";
 }
 
+function medalFor(index: number) {
+  if (index === 0) return "🥇";
+  if (index === 1) return "🥈";
+  if (index === 2) return "🥉";
+  return `${index + 1}`;
+}
+
 function chartTooltipFormatter(value: unknown) {
   return [formatYen(Number(value)), "収支"] as [string, string];
 }
@@ -396,6 +411,63 @@ function ChartPanel({
   );
 }
 
+function RankingSection({
+  title,
+  top,
+  bottom,
+}: {
+  title: string;
+  top: RankingItem[];
+  bottom: RankingItem[];
+}) {
+  return (
+    <section className="grid gap-3 rounded-md border border-[var(--line)] bg-[var(--panel)] p-4 shadow-sm">
+      <div className="flex items-center gap-2">
+        <Trophy size={20} aria-hidden />
+        <h3 className="text-base font-black">{title}</h3>
+      </div>
+      <div className="grid gap-3 lg:grid-cols-2">
+        <RankingList title="Top 5" items={top} />
+        <RankingList title="Bottom 5" items={bottom} />
+      </div>
+    </section>
+  );
+}
+
+function RankingList({ title, items }: { title: string; items: RankingItem[] }) {
+  return (
+    <div className="grid gap-2 rounded-md bg-[var(--panel-muted)] p-3">
+      <p className="text-sm font-black text-[var(--muted)]">{title}</p>
+      {items.length === 0 ? (
+        <p className="rounded-md border border-dashed border-[var(--line)] px-3 py-6 text-center text-sm font-bold text-[var(--muted)]">
+          データなし
+        </p>
+      ) : (
+        items.map((item, index) => (
+          <article key={`${title}-${item.name}`} className="grid gap-2 rounded-md border border-[var(--line)] bg-[var(--panel)] p-3">
+            <div className="flex min-w-0 items-center justify-between gap-3">
+              <div className="flex min-w-0 items-center gap-2">
+                <span className="grid size-8 shrink-0 place-items-center rounded-md bg-[var(--panel-muted)] text-lg font-black">
+                  {medalFor(index)}
+                </span>
+                <h4 className="truncate text-sm font-black">{item.name}</h4>
+              </div>
+              <p className={`shrink-0 text-sm font-black ${toneClass(valueTone(item.total))}`}>
+                {formatSignedYen(item.total)}
+              </p>
+            </div>
+            <div className="grid grid-cols-3 gap-2 text-xs">
+              <RecordMetric label="平均" value={formatSignedYen(item.average)} tone={valueTone(item.average)} />
+              <RecordMetric label="勝率" value={`${item.winRate.toFixed(1)}%`} />
+              <RecordMetric label="回数" value={`${item.sessions}回`} />
+            </div>
+          </article>
+        ))
+      )}
+    </div>
+  );
+}
+
 function Field({
   label,
   help,
@@ -545,6 +617,7 @@ export default function Home() {
         total: rows.reduce((sum, record) => sum + profitOf(record), 0),
         winRate: winRate(rows),
         average: average(rows.map(profitOf)),
+        sessions: rows.length,
       }))
       .sort((a, b) => b.total - a.total);
   }, [records]);
@@ -555,9 +628,27 @@ export default function Home() {
         name,
         total: rows.reduce((sum, record) => sum + profitOf(record), 0),
         winRate: winRate(rows),
+        average: average(rows.map(profitOf)),
+        sessions: rows.length,
       }))
       .sort((a, b) => b.total - a.total);
   }, [records]);
+
+  const machineRankings = useMemo(
+    () => ({
+      top: machineData.slice(0, 5),
+      bottom: [...machineData].sort((a, b) => a.total - b.total).slice(0, 5),
+    }),
+    [machineData],
+  );
+
+  const hallRankings = useMemo(
+    () => ({
+      top: hallData.slice(0, 5),
+      bottom: [...hallData].sort((a, b) => a.total - b.total).slice(0, 5),
+    }),
+    [hallData],
+  );
 
   const weekdayData = useMemo(() => {
     return weekdays.map((day, index) => {
@@ -1030,6 +1121,10 @@ export default function Home() {
               <ChartFallback />
             )}
           </ChartPanel>
+
+          <RankingSection title="機種ランキング" top={machineRankings.top} bottom={machineRankings.bottom} />
+
+          <RankingSection title="店舗ランキング" top={hallRankings.top} bottom={hallRankings.bottom} />
 
           <ChartPanel title="曜日別収支" summary={weekdaySummary}>
             {ready ? (
