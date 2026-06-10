@@ -4,6 +4,8 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](#license)
 
+⭐ If you find this project useful, please consider starring the repository.
+
 Pachi EV Analyzer is an open-source analytics tool for expected value calculation, bankroll management, and performance tracking for pachinko and pachislot players.
 
 The project focuses on statistics, risk management, and data visualization rather than gambling promotion.
@@ -22,15 +24,19 @@ https://pachi-ev-analyzer.vercel.app
 
 ## Screenshots
 
-The app includes dashboard KPIs, expected value calculation, bankroll tracking, import/export tools, analytics charts, and dark mode.
+The app includes dashboard KPIs, expected value calculation, bankroll tracking, ranking analytics, import/export tools, analytics charts, and dark mode.
 
 | Dashboard overview | Expected value calculator | Analytics charts |
 | --- | --- | --- |
 | ![Dashboard overview](docs/screenshots/dashboard.svg) | ![Expected value calculator](docs/screenshots/expected-value.svg) | ![Analytics charts](docs/screenshots/analytics.svg) |
 
-| Dark mode | Import / Export tools |
-| --- | --- |
-| ![Dark mode](docs/screenshots/dark-mode.svg) | ![Import and export tools](docs/screenshots/import-export.svg) |
+| Machine ranking | Store ranking | Dark mode |
+| --- | --- | --- |
+| ![Machine ranking](docs/screenshots/machine-ranking.svg) | ![Store ranking](docs/screenshots/store-ranking.svg) | ![Dark mode](docs/screenshots/dark-mode.svg) |
+
+| Import / Export tools |
+| --- |
+| ![Import and export tools](docs/screenshots/import-export.svg) |
 
 ## Features
 
@@ -41,6 +47,8 @@ The app includes dashboard KPIs, expected value calculation, bankroll tracking, 
 - Machine Performance Analysis
 - Store Performance Analysis
 - Weekday Analysis
+- Machine Performance Ranking
+- Store Performance Ranking
 - Risk Monitoring
 - JSON Backup Export
 - JSON Import
@@ -52,11 +60,11 @@ The app includes dashboard KPIs, expected value calculation, bankroll tracking, 
 
 ## Why This Project Exists
 
-The goal of this project is to provide a simple and transparent way to analyze expected value, historical performance, and bankroll risk.
+Many pachinko and pachislot players track results manually, often in notes or spreadsheets.
 
-Most existing tools focus only on raw calculations.
+Existing tools are often spreadsheet-based or focused only on raw calculations.
 
-Pachi EV Analyzer combines calculation, analytics, and visualization in a single dashboard.
+Pachi EV Analyzer provides expected-value analysis, bankroll tracking, ranking analytics, and performance visualization in a modern web application.
 
 ## Disclaimer
 
@@ -121,14 +129,15 @@ PNG files can also be used. If you switch to PNG, update the image paths in this
 - Dark Mode
 - CSV Export
 - JSON Import
+- Performance Ranking System
 
 ### Planned
 
 - Advanced Analytics
-- Performance Rankings
-- Risk Simulation
-- Additional Import / Export Options
 - Historical Trend Analysis
+- Risk Simulation
+- Session Insights
+- Additional Import / Export Options
 
 ## Release Notes
 
