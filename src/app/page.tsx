@@ -32,6 +32,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { machinePresets } from "@/data/machinePresets";
 
 const STORAGE_KEY = "pachi-ev-analyzer-records-v1";
 const SETTINGS_KEY = "pachi-ev-analyzer-settings-v1";
@@ -80,13 +81,6 @@ type EvInput = {
   exchangeRate: number;
 };
 
-type MachinePreset = {
-  name: string;
-  probability: number;
-  borderRotation: number;
-  averagePayout?: number;
-};
-
 const initialEv: EvInput = {
   machineName: "",
   jackpotDenominator: 399,
@@ -95,39 +89,6 @@ const initialEv: EvInput = {
   averagePayout: 4500,
   exchangeRate: 3.57,
 };
-
-const machinePresets: MachinePreset[] = [
-  {
-    name: "P エヴァンゲリオン15",
-    probability: 319,
-    borderRotation: 17.0,
-    averagePayout: 4500,
-  },
-  {
-    name: "P Re:ゼロから始める異世界生活 鬼がかりver.",
-    probability: 319,
-    borderRotation: 16.5,
-    averagePayout: 5000,
-  },
-  {
-    name: "P 大海物語5",
-    probability: 319,
-    borderRotation: 18.0,
-    averagePayout: 4200,
-  },
-  {
-    name: "e 東京喰種",
-    probability: 399,
-    borderRotation: 16.0,
-    averagePayout: 7900,
-  },
-  {
-    name: "e 北斗の拳10",
-    probability: 349,
-    borderRotation: 16.5,
-    averagePayout: 6500,
-  },
-];
 
 const initialSettings: BankrollSettings = {
   bankroll: 100000,
@@ -969,7 +930,7 @@ export default function Home() {
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             <Field
               label="機種プリセット"
-              help="※プリセット値は目安です。実際のスペックやボーダーは店舗条件・交換率・出玉削り等で変動します。"
+              help="※プリセット値は参考値です。公式値ではありません。実際のボーダー・期待値は交換率、出玉削り、持ち玉比率、店舗条件によって変動します。"
             >
               <select className={inputClass()} defaultValue="" onChange={(event) => applyMachinePreset(event.target.value)}>
                 <option value="">手入力</option>

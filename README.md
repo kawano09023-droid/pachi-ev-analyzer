@@ -66,6 +66,12 @@ Existing tools are often spreadsheet-based or focused only on raw calculations.
 
 Pachi EV Analyzer provides expected-value analysis, bankroll tracking, ranking analytics, and performance visualization in a modern web application.
 
+## Machine Presets
+
+Machine preset values are provided as reference defaults for convenience.
+
+They are not official values and may differ depending on exchange rate, payout conditions, and store environment.
+
 ## Disclaimer
 
 This project does not encourage gambling.
