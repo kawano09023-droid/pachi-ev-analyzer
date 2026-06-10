@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="800" viewBox="0 0 1280 800" role="img" aria-labelledby="title desc">
+  <title id="title">Pachi EV Analyzer dashboard screenshot preview</title>
+  <desc id="desc">Dashboard preview with KPI cards for total profit, monthly profit, win rate, and losing streak.</desc>
+  <rect width="1280" height="800" fill="#f7f8f5"/>
+  <rect x="64" y="48" width="1152" height="704" rx="18" fill="#ffffff" stroke="#d9dfd7"/>
+  <text x="104" y="116" font-family="Arial, sans-serif" font-size="42" font-weight="800" fill="#17211d">Pachi EV Analyzer</text>
+  <text x="104" y="158" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#69746f">Expected value, bankroll, and performance dashboard</text>
+  <g transform="translate(104 218)">
+    <rect width="250" height="128" rx="10" fill="#eef7f4" stroke="#9accc3"/>
+    <text x="24" y="44" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#69746f">Total Profit</text>
+    <text x="24" y="92" font-family="Arial, sans-serif" font-size="38" font-weight="900" fill="#115e59">+52,000円</text>
+  </g>
+  <g transform="translate(382 218)">
+    <rect width="250" height="128" rx="10" fill="#eef7f4" stroke="#9accc3"/>
+    <text x="24" y="44" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#69746f">Monthly Profit</text>
+    <text x="24" y="92" font-family="Arial, sans-serif" font-size="38" font-weight="900" fill="#115e59">+28,500円</text>
+  </g>
+  <g transform="translate(660 218)">
+    <rect width="250" height="128" rx="10" fill="#ffffff" stroke="#d9dfd7"/>
+    <text x="24" y="44" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#69746f">Win Rate</text>
+    <text x="24" y="92" font-family="Arial, sans-serif" font-size="38" font-weight="900" fill="#17211d">58.3%</text>
+  </g>
+  <g transform="translate(938 218)">
+    <rect width="250" height="128" rx="10" fill="#fff1f3" stroke="#f0b8c4"/>
+    <text x="24" y="44" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#69746f">Max Losing Streak</text>
+    <text x="24" y="92" font-family="Arial, sans-serif" font-size="38" font-weight="900" fill="#be123c">2</text>
+  </g>
+  <rect x="104" y="400" width="1084" height="260" rx="10" fill="#f5f7f4" stroke="#d9dfd7"/>
+  <text x="136" y="452" font-family="Arial, sans-serif" font-size="26" font-weight="800" fill="#17211d">Analytics Dashboard</text>
+  <polyline points="150,610 280,560 410,585 540,512 670,548 800,476 930,520 1060,448" fill="none" stroke="#0f766e" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <line x1="136" y1="638" x2="1148" y2="638" stroke="#d9dfd7" stroke-width="2"/>
+</svg>

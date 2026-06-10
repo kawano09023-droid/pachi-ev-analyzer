@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="800" viewBox="0 0 1280 800" role="img" aria-labelledby="title desc">
+  <title id="title">Pachi EV Analyzer analytics screenshot preview</title>
+  <desc id="desc">Analytics preview with monthly, bankroll, machine, store, and weekday charts.</desc>
+  <rect width="1280" height="800" fill="#f7f8f5"/>
+  <text x="80" y="78" font-family="Arial, sans-serif" font-size="38" font-weight="900" fill="#17211d">Analytics Graphs</text>
+  <g transform="translate(80 120)">
+    <rect width="540" height="280" rx="14" fill="#ffffff" stroke="#d9dfd7"/>
+    <text x="28" y="48" font-family="Arial, sans-serif" font-size="23" font-weight="800" fill="#17211d">Monthly Profit</text>
+    <rect x="48" y="178" width="54" height="58" fill="#0f766e"/>
+    <rect x="128" y="142" width="54" height="94" fill="#0f766e"/>
+    <rect x="208" y="200" width="54" height="36" fill="#be123c"/>
+    <rect x="288" y="112" width="54" height="124" fill="#0f766e"/>
+    <rect x="368" y="190" width="54" height="46" fill="#be123c"/>
+    <rect x="448" y="86" width="54" height="150" fill="#0f766e"/>
+    <line x1="36" y1="236" x2="504" y2="236" stroke="#d9dfd7" stroke-width="2"/>
+  </g>
+  <g transform="translate(660 120)">
+    <rect width="540" height="280" rx="14" fill="#ffffff" stroke="#d9dfd7"/>
+    <text x="28" y="48" font-family="Arial, sans-serif" font-size="23" font-weight="800" fill="#17211d">Bankroll Trend</text>
+    <polyline points="48,218 122,190 196,202 270,150 344,176 418,112 492,136" fill="none" stroke="#0f766e" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="36" y1="236" x2="504" y2="236" stroke="#d9dfd7" stroke-width="2"/>
+  </g>
+  <g transform="translate(80 440)">
+    <rect width="350" height="260" rx="14" fill="#ffffff" stroke="#d9dfd7"/>
+    <text x="24" y="44" font-family="Arial, sans-serif" font-size="22" font-weight="800" fill="#17211d">Machine</text>
+    <rect x="118" y="78" width="170" height="30" fill="#0f766e"/>
+    <rect x="118" y="128" width="112" height="30" fill="#0f766e"/>
+    <rect x="118" y="178" width="80" height="30" fill="#be123c"/>
+  </g>
+  <g transform="translate(465 440)">
+    <rect width="350" height="260" rx="14" fill="#ffffff" stroke="#d9dfd7"/>
+    <text x="24" y="44" font-family="Arial, sans-serif" font-size="22" font-weight="800" fill="#17211d">Store</text>
+    <rect x="118" y="78" width="152" height="30" fill="#0f766e"/>
+    <rect x="118" y="128" width="96" height="30" fill="#be123c"/>
+    <rect x="118" y="178" width="132" height="30" fill="#0f766e"/>
+  </g>
+  <g transform="translate(850 440)">
+    <rect width="350" height="260" rx="14" fill="#ffffff" stroke="#d9dfd7"/>
+    <text x="24" y="44" font-family="Arial, sans-serif" font-size="22" font-weight="800" fill="#17211d">Weekday</text>
+    <rect x="44" y="150" width="28" height="70" fill="#b7791f"/>
+    <rect x="84" y="118" width="28" height="102" fill="#b7791f"/>
+    <rect x="124" y="176" width="28" height="44" fill="#b7791f"/>
+    <rect x="164" y="94" width="28" height="126" fill="#b7791f"/>
+    <rect x="204" y="162" width="28" height="58" fill="#b7791f"/>
+    <rect x="244" y="130" width="28" height="90" fill="#b7791f"/>
+    <rect x="284" y="106" width="28" height="114" fill="#b7791f"/>
+    <line x1="36" y1="220" x2="318" y2="220" stroke="#d9dfd7" stroke-width="2"/>
+  </g>
+</svg>

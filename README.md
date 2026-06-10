@@ -1,17 +1,54 @@
 # Pachi EV Analyzer
 
-Pachi EV Analyzer is an OSS web app for learning-focused expected value, revenue, and bankroll analysis for pachinko and pachislot.
+[![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=nextdotjs)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-Ready-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](#license)
 
-This project does not recommend gambling. It is intended for probability, statistics, bankroll management, and personal record analysis.
+Pachi EV Analyzer is an open-source analytics tool for expected value calculation, bankroll management, and performance tracking for pachinko and pachislot players.
+
+The project focuses on statistics, risk management, and data visualization rather than gambling promotion.
+
+## Project Status
+
+This project is currently in early development as a personal open-source project.
+
+Version: 0.1.0
+
+## Live Demo
+
+Demo URL:
+
+https://pachi-ev-analyzer.vercel.app
+
+## Screenshots
+
+| Dashboard | Expected Value Calculator | Analytics Graphs |
+| --- | --- | --- |
+| ![Dashboard screen](docs/screenshots/dashboard.svg) | ![Expected value calculator screen](docs/screenshots/expected-value.svg) | ![Analytics graphs screen](docs/screenshots/analytics.svg) |
 
 ## Features
 
-- Expected value calculator with border difference and rotation-rate evaluation
-- Revenue record registration using LocalStorage
-- KPI summary: investment, recovery, profit, win rate, averages, and bankroll balance
-- Monthly, weekday, machine, hall, and investment analysis
-- Bankroll settings and loss-limit warnings
-- JSON backup export
+- Expected Value Calculator
+- Bankroll Management
+- Monthly Profit Analysis
+- Machine Performance Analysis
+- Store Performance Analysis
+- Risk Monitoring
+- JSON Backup Export
+
+## Why This Project Exists
+
+The goal of this project is to provide a simple and transparent way to analyze expected value, historical performance, and bankroll risk.
+
+Most existing tools focus only on raw calculations.
+
+Pachi EV Analyzer combines calculation, analytics, and visualization in a single dashboard.
+
+## Disclaimer
+
+This project does not encourage gambling.
+
+Its purpose is to help users understand expected value, statistical variance, bankroll risk, and historical performance through data analysis.
 
 ## Tech Stack
 
@@ -21,13 +58,6 @@ This project does not recommend gambling. It is intended for probability, statis
 - Recharts
 - LocalStorage
 
-## LocalStorage Keys
-
-```text
-pachi-ev-analyzer-records-v1
-pachi-ev-analyzer-settings-v1
-```
-
 ## Getting Started
 
 ```bash
@@ -35,45 +65,66 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:3000.
+Open http://localhost:3000 in your browser.
+
+## Data Storage
+
+The MVP stores data in LocalStorage.
+
+```text
+pachi-ev-analyzer-records-v1
+pachi-ev-analyzer-settings-v1
+```
+
+Use the JSON export button before clearing browser data or moving to another device.
+
+## Privacy
+
+This app stores data only in your browser using LocalStorage.
+
+No server-side database is used in the current version.
+
+## Screenshot Workflow
+
+The app includes a `サンプルデータ読み込み` button for README and release screenshots.
+
+1. Run the local app.
+2. Click `サンプルデータ読み込み`.
+3. Capture the dashboard, expected value calculator, and analytics graph sections.
+4. Save the images in `docs/screenshots/`.
+5. Replace the existing screenshot files while keeping these names:
+   - `dashboard.svg`
+   - `expected-value.svg`
+   - `analytics.svg`
+
+PNG files can also be used. If you switch to PNG, update the image paths in this README.
 
 ## Roadmap
 
-### Phase 1 MVP
+### Version 0.2
 
-- EV calculation
-- Revenue record registration
-- Revenue list
-- KPI display
-- LocalStorage persistence
+- PWA Support
+- Dark Mode
+- CSV Export
+- Data Import
 
-### Phase 2 Analytics
+### Version 0.3
 
-- Monthly revenue chart
-- Machine analysis
-- Hall analysis
-- Weekday analysis
-- Investment analysis
+- Advanced Analytics
+- Yearly Statistics
+- Performance Ranking
 
-### Phase 3 Risk Management
+### Version 0.4
 
-- Bankroll settings
-- Loss warnings
-- Balance trend chart
-- Drawdown analysis
+- Risk Simulation
+- Historical Trend Analysis
 
-### Phase 4 EV Simulator
+## Contributing
 
-- EV simulator
-- Convergence chart
-- Variance analysis
+Issues and suggestions are welcome.
 
-### Phase 5 OSS Release
-
-- Public GitHub repository: `pachi-ev-analyzer`
-- Vercel demo: `https://pachi-ev-analyzer.vercel.app`
-- Screenshots and license
+This project is still in early development, so feedback on usability, analytics, and documentation is appreciated.
 
 ## License
 
-MIT
+MIT License
