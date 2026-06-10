@@ -80,6 +80,13 @@ type EvInput = {
   exchangeRate: number;
 };
 
+type MachinePreset = {
+  name: string;
+  probability: number;
+  borderRotation: number;
+  averagePayout?: number;
+};
+
 const initialEv: EvInput = {
   machineName: "",
   jackpotDenominator: 399,
@@ -88,6 +95,39 @@ const initialEv: EvInput = {
   averagePayout: 4500,
   exchangeRate: 3.57,
 };
+
+const machinePresets: MachinePreset[] = [
+  {
+    name: "P エヴァンゲリオン15",
+    probability: 319,
+    borderRotation: 17.0,
+    averagePayout: 4500,
+  },
+  {
+    name: "P Re:ゼロから始める異世界生活 鬼がかりver.",
+    probability: 319,
+    borderRotation: 16.5,
+    averagePayout: 5000,
+  },
+  {
+    name: "P 大海物語5",
+    probability: 319,
+    borderRotation: 18.0,
+    averagePayout: 4200,
+  },
+  {
+    name: "e 東京喰種",
+    probability: 399,
+    borderRotation: 16.0,
+    averagePayout: 7900,
+  },
+  {
+    name: "e 北斗の拳10",
+    probability: 349,
+    borderRotation: 16.5,
+    averagePayout: 6500,
+  },
+];
 
 const initialSettings: BankrollSettings = {
   bankroll: 100000,
@@ -542,6 +582,15 @@ export default function Home() {
     [records],
   );
 
+  const machineSuggestions = useMemo(() => {
+    return Array.from(
+      new Set([
+        ...machinePresets.map((preset) => preset.name),
+        ...records.map((record) => record.machine).filter(Boolean),
+      ]),
+    ).sort((a, b) => a.localeCompare(b, "ja"));
+  }, [records]);
+
   const totals = useMemo(() => {
     const investment = records.reduce((sum, record) => sum + record.investment, 0);
     const recovery = records.reduce((sum, record) => sum + record.recovery, 0);
@@ -740,6 +789,19 @@ export default function Home() {
     setEv((current) => ({ ...current, [key]: sanitizeNumericInput(value) }));
   }
 
+  function applyMachinePreset(name: string) {
+    const preset = machinePresets.find((item) => item.name === name);
+    if (!preset) return;
+
+    setEv((current) => ({
+      ...current,
+      machineName: preset.name,
+      jackpotDenominator: preset.probability,
+      borderSpins: preset.borderRotation,
+      averagePayout: preset.averagePayout ?? current.averagePayout,
+    }));
+  }
+
   function addRecord(formData: FormData) {
     const record: PachiRecord = {
       id: crypto.randomUUID(),
@@ -842,7 +904,7 @@ export default function Home() {
             aria-pressed={theme === "dark"}
           >
             {theme === "dark" ? <Sun size={18} aria-hidden /> : <Moon size={18} aria-hidden />}
-            <span className="hidden sm:inline">{theme === "dark" ? "Light" : "Dark"}</span>
+            <span className="hidden sm:inline">{theme === "dark" ? "ライト" : "ダーク"}</span>
           </button>
         </div>
       </header>
@@ -885,14 +947,14 @@ export default function Home() {
               className="inline-flex min-h-14 items-center justify-center gap-2 rounded-md bg-[var(--teal)] px-4 font-black text-white shadow-sm"
             >
               <Plus size={20} aria-hidden />
-              Add Record
+              収支を登録
             </button>
             <a
               href="#ev-calculator"
               className="inline-flex min-h-14 items-center justify-center gap-2 rounded-md border border-[var(--line)] bg-[var(--panel)] px-4 font-black shadow-sm"
             >
               <Calculator size={20} aria-hidden />
-              EV Calculator
+              期待値計算を開く
             </a>
           </section>
         </>
@@ -905,6 +967,19 @@ export default function Home() {
             <h2 className="text-lg font-black">期待値計算</h2>
           </div>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <Field
+              label="機種プリセット"
+              help="※プリセット値は目安です。実際のスペックやボーダーは店舗条件・交換率・出玉削り等で変動します。"
+            >
+              <select className={inputClass()} defaultValue="" onChange={(event) => applyMachinePreset(event.target.value)}>
+                <option value="">手入力</option>
+                {machinePresets.map((preset) => (
+                  <option key={preset.name} value={preset.name}>
+                    {preset.name}
+                  </option>
+                ))}
+              </select>
+            </Field>
             <Field label="機種名">
               <input className={inputClass()} value={ev.machineName} onChange={(e) => setEv({ ...ev, machineName: e.target.value })} />
             </Field>
@@ -971,7 +1046,7 @@ export default function Home() {
                 <input className={inputClass()} name="date" type="date" defaultValue={new Date().toISOString().slice(0, 10)} required />
               </Field>
               <Field label="機種名">
-                <input className={inputClass()} name="machine" required />
+                <input className={inputClass()} name="machine" list="machine-name-suggestions" required />
               </Field>
               <Field label="店舗名">
                 <input className={inputClass()} name="hall" required />
@@ -987,6 +1062,11 @@ export default function Home() {
               </Field>
               <input type="hidden" name="type" value="玉" />
               <input type="hidden" name="unitDiff" value="0" />
+              <datalist id="machine-name-suggestions">
+                {machineSuggestions.map((machine) => (
+                  <option key={machine} value={machine} />
+                ))}
+              </datalist>
               <button className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md bg-[var(--teal)] px-4 font-black text-white sm:col-span-2" type="submit">
                 <Plus size={18} aria-hidden />
                 登録
@@ -1182,15 +1262,15 @@ export default function Home() {
               </button>
               <button type="button" onClick={exportJson} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md border border-[var(--line)] bg-[var(--panel-muted)] px-4 font-black">
                 <Download size={18} aria-hidden />
-                JSON Export
+                JSONを書き出し
               </button>
               <button type="button" onClick={exportCsv} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md border border-[var(--line)] bg-[var(--panel-muted)] px-4 font-black">
                 <Download size={18} aria-hidden />
-                CSV Export
+                CSVを書き出し
               </button>
               <button type="button" onClick={() => fileInputRef.current?.click()} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md border border-[var(--line)] bg-[var(--panel-muted)] px-4 font-black">
                 <Upload size={18} aria-hidden />
-                JSON Import
+                JSONを読み込み
               </button>
             </div>
             <button
@@ -1246,9 +1326,9 @@ export default function Home() {
           </section>
 
           <footer className="grid gap-2 border-t border-[var(--line)] pt-5 text-center text-sm font-bold text-[var(--muted)]">
-            <p>Version 0.2.0</p>
-            <p>Open Source Project</p>
-            <p>MIT License</p>
+            <p>バージョン 0.2.0</p>
+            <p>オープンソースプロジェクト</p>
+            <p>MIT ライセンス</p>
             <a className="inline-flex items-center justify-center gap-2 text-[var(--teal-dark)]" href={GITHUB_URL} target="_blank" rel="noreferrer">
               <GitFork size={18} aria-hidden />
               GitHub
@@ -1260,11 +1340,11 @@ export default function Home() {
       <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-[var(--line)] bg-[var(--panel)]/95 shadow-[0_-10px_30px_rgba(15,23,42,0.08)] backdrop-blur">
         <div className="mx-auto grid max-w-6xl grid-cols-5 gap-1 px-2 py-2">
           {[
-            { id: "home" as const, label: "Home", Icon: PiggyBank },
-            { id: "record" as const, label: "Record", Icon: Plus },
-            { id: "analytics" as const, label: "Analytics", Icon: LineChart },
-            { id: "rankings" as const, label: "Rankings", Icon: Trophy },
-            { id: "settings" as const, label: "Settings", Icon: WalletCards },
+            { id: "home" as const, label: "ホーム", Icon: PiggyBank },
+            { id: "record" as const, label: "記録", Icon: Plus },
+            { id: "analytics" as const, label: "分析", Icon: LineChart },
+            { id: "rankings" as const, label: "ランキング", Icon: Trophy },
+            { id: "settings" as const, label: "設定", Icon: WalletCards },
           ].map(({ id, label, Icon }) => {
             const isActive = activeTab === id;
             return (
