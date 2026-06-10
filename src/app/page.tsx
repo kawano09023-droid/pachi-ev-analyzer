@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   AlertTriangle,
   BarChart3,
@@ -9,6 +9,7 @@ import {
   Download,
   GitFork,
   HelpCircle,
+  Upload,
   LineChart,
   Moon,
   PiggyBank,
@@ -247,6 +248,66 @@ function escapeCsvCell(value: string | number) {
   return text;
 }
 
+function isRecordObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function safeNumber(value: unknown) {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function validateImportedRecords(value: unknown): PachiRecord[] {
+  const source = isRecordObject(value) && Array.isArray(value.records) ? value.records : value;
+  if (!Array.isArray(source)) {
+    throw new Error("JSON はレコード配列、または records 配列を含むバックアップファイルである必要があります。");
+  }
+
+  return source.map((item, index) => {
+    if (!isRecordObject(item)) {
+      throw new Error(`${index + 1}件目のレコード形式が不正です。`);
+    }
+
+    const id = item.id;
+    const date = item.date;
+    const machine = item.machine;
+    const store = item.store ?? item.hall;
+    const investment = item.investment;
+    const returnAmount = item.returnAmount ?? item.recovery ?? item.return;
+    const memo = item.memo;
+
+    if (typeof id !== "string" || id.trim() === "") {
+      throw new Error(`${index + 1}件目に id がありません。`);
+    }
+    if (typeof date !== "string" || date.trim() === "") {
+      throw new Error(`${index + 1}件目に date がありません。`);
+    }
+    if (typeof machine !== "string" || machine.trim() === "") {
+      throw new Error(`${index + 1}件目に machine がありません。`);
+    }
+    if (typeof store !== "string" || store.trim() === "") {
+      throw new Error(`${index + 1}件目に store がありません。`);
+    }
+    if (investment === undefined || returnAmount === undefined) {
+      throw new Error(`${index + 1}件目に investment または returnAmount がありません。`);
+    }
+
+    const recordType = item.type === "枚" ? "枚" : "玉";
+
+    return {
+      id,
+      date,
+      machine,
+      hall: store,
+      investment: safeNumber(investment),
+      recovery: safeNumber(returnAmount),
+      unitDiff: safeNumber(item.unitDiff),
+      type: recordType,
+      memo: typeof memo === "string" ? memo : "",
+    };
+  });
+}
+
 function DashboardCard({
   label,
   value,
@@ -365,6 +426,7 @@ export default function Home() {
   const [isRecordFormOpen, setIsRecordFormOpen] = useState(false);
   const [isAboutOpen, setIsAboutOpen] = useState(false);
   const [theme, setTheme] = useState<Theme>("light");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const storedRecords = window.localStorage.getItem(STORAGE_KEY);
@@ -640,6 +702,33 @@ export default function Home() {
     URL.revokeObjectURL(url);
   }
 
+  async function importJsonFile(file: File) {
+    try {
+      const parsed = JSON.parse(await file.text()) as unknown;
+      const importedRecords = validateImportedRecords(parsed);
+
+      if (importedRecords.length === 0) {
+        window.alert("インポートできるレコードがありません。");
+        return;
+      }
+
+      const shouldReplace = window.confirm(
+        `現在の収支レコード ${records.length}件を、インポートした ${importedRecords.length}件で置き換えます。よろしいですか？`,
+      );
+
+      if (!shouldReplace) return;
+
+      setRecords(importedRecords);
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(importedRecords));
+      window.alert("JSON バックアップをインポートしました。");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "JSON ファイルを読み込めませんでした。";
+      window.alert(`インポートに失敗しました。\n${message}`);
+    } finally {
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  }
+
   function loadDemoRecords() {
     setRecords(demoRecords);
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(demoRecords));
@@ -682,6 +771,24 @@ export default function Home() {
               <Download size={18} aria-hidden />
               JSON
             </button>
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="inline-flex min-h-12 items-center gap-2 rounded-md border border-[var(--line)] bg-[var(--panel)] px-4 text-sm font-black shadow-sm"
+            >
+              <Upload size={18} aria-hidden />
+              Import
+            </button>
+            <input
+              ref={fileInputRef}
+              className="hidden"
+              type="file"
+              accept="application/json,.json"
+              onChange={(event) => {
+                const file = event.target.files?.[0];
+                if (file) void importJsonFile(file);
+              }}
+            />
             <button
               type="button"
               onClick={exportCsv}
